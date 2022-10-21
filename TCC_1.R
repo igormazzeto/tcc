@@ -68,6 +68,7 @@
   if(!require(randomForest)) install.packages("randomForest") else library(randomForest)
   if(!require(lpSolve)) install.packages("lpSolve") else library (lpSolve)
   
+  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
   
   
   ### Leitura de dados
@@ -88,6 +89,34 @@
   
   ### Transformação do IdAgente as char
   dados$IdAgente = as.character(dados$IdAgente)
+  
+  
+  
+  
+  
+  
+  # par(mfrow=c(5,3))
+  # plot(Compensacoes.Pagas ~ Volume.chuva, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ Descargas.atm, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ Vento, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ umidade, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ temperatura, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ AG1, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ AE1, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ AE2, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ VC1, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ DS1, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ DS2, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ AR1, data=base, pch=19, col="dark blue")
+  # plot(Compensacoes.Pagas ~ as.factor(grupos2), data=base, pch=19, col="dark blue", xlab="Grupos")
+  # plot(Compensacoes.Pagas ~ Unidades.Consumidoras, data=base, pch=19, col="dark blue")
+  # packHV::hist_boxplot(base$Compensacoes.Pagas, main="", col="light blue", xlab="Compensacoes.Pagas")
+  # mosaicplot(native.country ~ y, data=dados1);abline(h = p1, col = "red")
+  #  matCor <- cor(dados, method="spearman")
+  
+  # corrplot(matCor, method = "ellipse", type="upper", 
+  #          order="AOE", diag=FALSE, addgrid.col=NA,
+  #          outline=TRUE)
   
   
   
