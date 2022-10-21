@@ -8,6 +8,18 @@
   
   ### DESCRIÇÃO DO PROBLEMA
   
+  ###
+  ###
+  ###
+  ###
+  ###
+  ###
+  ###
+  ###
+  ###
+  
+  ### CARREGAMENTO DE PACOTES
+  
   
   rm(list = ls(all = TRUE))
   
@@ -65,19 +77,36 @@
   # 3 x1 + 2 x2 + 2 x3 <= 15
   
 
-  f.obj <- c(1, 9, 1)
-  f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
-  f.dir <- c("<=", "<=")
-  f.rhs <- c(9, 15)
-  lp ("max", f.obj, f.con, f.dir, f.rhs)  
-  lp ("max", f.obj, f.con, f.dir, f.rhs)$solution  
+  # f.obj <- c(1, 9, 1)
+  # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
+  # f.dir <- c("<=", "<=")
+  # f.rhs <- c(9, 15)
+  # lp ("max", f.obj, f.con, f.dir, f.rhs)  
+  # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution  
   
   
-  ###
+  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+  
   ### Leitura de dados
-  dados <- read_excel("7. Especialização/3. TCC/2. Arquivos 20.10.2022/BaseCompilada_TS14_2022.xlsx", 
-                                        sheet = "DadosEscores")
-  View(dados)
   
+  ### MacOS
+  # dados <- read_excel("7. Especialização/3. TCC/2. Arquivos 20.10.2022/BaseCompilada_TS14_2022.xlsx", 
+  #                                       sheet = "DadosEscores")
+  
+  ###  Windows
+  library(readxl)
+  dados <- read_excel("BaseCompilada_TS14_2022.xlsx", 
+                                        sheet = "DadosEscores")
+  
+  ### Estatísticas
+  summary(dados)
+  
+  ### Transformação do IdAgente as char
+  dados$IdAgente = as.character(dados$IdAgente)
+  
+  View(dados)  
+  
+
+    
   
   
