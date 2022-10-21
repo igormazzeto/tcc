@@ -1,4 +1,7 @@
   #############################################################
+  ### UNIVERSIDADE FEDERAL DE MINAS GERAIS                  ###
+  ### INSTITUTO DE CIÊNCIAS EXATAS                          ###
+  ### DEPARTAMENTO DE ESTATÍSTICA                           ###
   ### ESPECIALIZAÇÃO EM ESTATÍSTICA                         ###
   ### TRABALHO DE CONCLUSÃO DE CURSO                        ###
   ### TEMA: REGRESSÃO LINEAR - OTIMIZAÇÃO DE BETA ZERO      ###
@@ -66,26 +69,6 @@
   if(!require(lpSolve)) install.packages("lpSolve") else library (lpSolve)
   
   
-  #####
-  
-  ## Exemplo de programação linear
-  
-  # Set up problem -> max: x1 + 9 x2 + x3 
-  
-  #subject to
-  # x1 + 2 x2 + 3 x3 <= 9
-  # 3 x1 + 2 x2 + 2 x3 <= 15
-  
-
-  # f.obj <- c(1, 9, 1)
-  # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
-  # f.dir <- c("<=", "<=")
-  # f.rhs <- c(9, 15)
-  # lp ("max", f.obj, f.con, f.dir, f.rhs)  
-  # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution  
-  
-  
-  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
   
   ### Leitura de dados
   
@@ -98,13 +81,37 @@
   dados <- read_excel("BaseCompilada_TS14_2022.xlsx", 
                                         sheet = "DadosEscores")
   
-  ### Estatísticas
+  View(dados)  
+  
+  ### Estatísticas - resumo
   summary(dados)
   
   ### Transformação do IdAgente as char
   dados$IdAgente = as.character(dados$IdAgente)
   
-  View(dados)  
+  
+  
+  
+  
+  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+  
+  ### Exemplo de programação linear
+  
+  # Set up problem -> max: x1 + 9 x2 + x3 
+  
+  # subject to
+  # x1 + 2 x2 + 3 x3 <= 9
+  # 3 x1 + 2 x2 + 2 x3 <= 15
+  
+  
+  # f.obj <- c(1, 9, 1)
+  # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
+  # f.dir <- c("<=", "<=")
+  # f.rhs <- c(9, 15)
+  # lp ("max", f.obj, f.con, f.dir, f.rhs)
+  # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
+  
+  
   
 
     
