@@ -74,15 +74,29 @@
   ### Leitura de dados
   
   ### MacOS
-  # dados <- read_excel("7. Especialização/3. TCC/2. Arquivos 20.10.2022/BaseCompilada_TS14_2022.xlsx", 
-  #                                       sheet = "DadosEscores")
+  dados =  read_excel("7. Especialização/3. TCC/3. Códigos/tcc/BaseCompilada_TS14_2022.xlsx", 
+                   sheet = "DadosEscores")
   
   ###  Windows
-  library(readxl)
-  dados <- read_excel("BaseCompilada_TS14_2022.xlsx", 
-                                        sheet = "DadosEscores")
+  # library(readxl)
+  # dados <- read_excel("BaseCompilada_TS14_2022.xlsx", 
+  #                                       sheet = "DadosEscores")
   
-  View(dados)  
+  # View(dados)  
+  
+  ### Variáveis do modelo ### ### ### ### ### ### ### ### ### ### ### ### ###
+  ###                                                                     ###
+  # X1: Extensão de rede menor que 230 kV                                 ###
+  # X2: Extensão de rede superior que 230 kV                              ###
+  # X3: Potência aparente total, em MVA, de equipamentos de subestação    ###
+  # x4: PotÇencia reativa total, em Mvar, de equipamentos de subestação   ###
+  # X5: Equipamentos de subestação com tensão inferior a 230 kV           ###
+  # X6: Equipamentos de subestação com tensão superior a 230 kV           ###
+  # X7: Módulos de manobra com tensão inferior a 230 kV                   ###
+  # X8: Módulos de manobra com tensão igual ou superior a 230 kV          ###
+  # X9: Qualiodade (não utilizada)                                        ###
+  # Y : PMSO (variável resposta)                                          ###
+  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
   
   ### Estatísticas - resumo
   summary(dados)
@@ -90,38 +104,76 @@
   ### Transformação do IdAgente as char
   dados$IdAgente = as.character(dados$IdAgente)
   
+  ### dataset com variáveis do modelo
+  db = with(dados,dplyr::select(dados, Concessionaria, Tipo,
+                        Ano, PMSO, rede.menor.230,
+                        rede.maior.230,MVA,Mvar,
+                        modulos.sub.menor230,modulos.sub.maior230,
+                        modulos.manobra.menor230,modulos.manobra.maior230))
   
+  ### Modificacao dos nomes das variaveis
+  names(db)[5]  = "X1"
+  names(db)[6]  = "X2"
+  names(db)[7]  = "X3"
+  names(db)[8]  = "X4"
+  names(db)[9]  = "X5"
+  names(db)[10] = "X6"
+  names(db)[11] = "X7"
+  names(db)[12] = "X8"
   
+  # View(db)
   
+  ### Gráficos
   
+  ### Histograma
+  with(db,packHV::hist_boxplot(PMSO, main="Histograma", 
+                       col="light blue",
+                       xlab="PMSO"))
   
-  # par(mfrow=c(5,3))
-  # plot(Compensacoes.Pagas ~ Volume.chuva, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ Descargas.atm, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ Vento, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ umidade, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ temperatura, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ AG1, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ AE1, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ AE2, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ VC1, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ DS1, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ DS2, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ AR1, data=base, pch=19, col="dark blue")
-  # plot(Compensacoes.Pagas ~ as.factor(grupos2), data=base, pch=19, col="dark blue", xlab="Grupos")
-  # plot(Compensacoes.Pagas ~ Unidades.Consumidoras, data=base, pch=19, col="dark blue")
-  # packHV::hist_boxplot(base$Compensacoes.Pagas, main="", col="light blue", xlab="Compensacoes.Pagas")
-  # mosaicplot(native.country ~ y, data=dados1);abline(h = p1, col = "red")
-  #  matCor <- cor(dados, method="spearman")
+  ### Scatter plots
+  #par(mfrow=c(4,2))
+    plot(PMSO ~ X1, data=db, pch=19, col="dark blue", main =  'PMSO x X1')
+    plot(PMSO ~ X2, data=db, pch=19, col="red", main =  'PMSO x X2')
+    plot(PMSO ~ X3, data=db, pch=19, col="green", main =  'PMSO x X3')
+    plot(PMSO ~ X4, data=db, pch=19, col="cyan", main =  'PMSO x X4')
+    plot(PMSO ~ X5, data=db, pch=19, col="grey", main =  'PMSO x X5')
+    plot(PMSO ~ X6, data=db, pch=19, col="orange", main =  'PMSO x X6')
+    plot(PMSO ~ X7, data=db, pch=19, col="purple", main =  'PMSO x X7')
+    plot(PMSO ~ X8, data=db, pch=19, col="black", main =  'PMSO x X8')
+
+  ### Correlation plots
+  dbcor = with(db,dplyr::select(db, PMSO,X1,X2,X3,X4,X5,X6,X7,X8))
+    
+  matCor <- cor(dbcor, method="spearman")
+  corrplot(matCor, type="upper",
+             order="AOE", diag=FALSE, addgrid.col=NA,
+             outline=TRUE)
+  ### Boxplots
   
-  # corrplot(matCor, method = "ellipse", type="upper", 
-  #          order="AOE", diag=FALSE, addgrid.col=NA,
-  #          outline=TRUE)
+  with(db,
+  boxplot(PMSO ~ Ano,
+          main="PMSO anual", 
+          col="dark blue", 
+          xlab="Ano",
+          ylab="PMSO")
+  )
   
+  with(db,
+       boxplot(PMSO ~ Concessionaria,
+               main="PMSO por conc.", 
+               col="green", 
+               xlab="Conc.",
+               ylab="PMSO")
+  )
   
-  
-  
-  
+  with(db,
+       boxplot(PMSO ~ Tipo,
+               main="PMSO por tipo", 
+               col="orange", 
+               xlab="Tipo",
+               ylab="PMSO")
+  )
+    
   ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
   
   ### Exemplo de programação linear
