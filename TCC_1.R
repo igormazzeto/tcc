@@ -173,7 +173,28 @@
                xlab="Tipo",
                ylab="PMSO")
   )
+  
+  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+  
+  ### Linear Regressions
+  
+  ### Analisando o R2 de cada variavel
+  exploreR::masslm(dbcor,"PMSO")
+  
+  ### modelo linear com todas as variaveis
+  modelo = lm(PMSO ~ ., data=dbcor)
+  summary(modelo)
+  plot(modelo, lty=0, pch=19, col="blue")
+  modelo$coefficients
+  
+  ### Shapiro-Wilk test | Null-hypothesis: population is normally distributed
+  ### If p-value < alpha then nul-=hypothesis is rejected.
+  
+  shapiro.test(residuals(modelo))
+  cat('Evidencias de que os residuos nao sao normalmente distribuidos')
+  
     
+  
   ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
   
   ### Exemplo de programação linear
