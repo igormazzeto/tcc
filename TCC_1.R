@@ -9,17 +9,20 @@
   ### ORIENTADOR: PROF. DR. MARCELO AZEVEDO COSTA           ###
   #############################################################
   
-  ### DESCRIÇÃO DO PROBLEMA
+
+  ### "Que haja uma luz nos lugares mais escuros, quando todas as outras luzes se apagarem." JRR Tolkien
   
-  ###
-  ###
-  ###
-  ###
-  ###
-  ###
-  ###
-  ###
-  ###
+  ### Do not be afraid of your difficulties.Do not wish you could be in other circumstances than you are.
+  ### For when you have made the best of an adversity, it becomes the stepping stone to a splendid opportunity.
+
+  ### virtus et scientia | pro scientia atque sapientia
+
+
+  ### DESCRIÇÃO DO PROBLEMA - TÓPICOS
+  
+  ### PREVISÃO DO CUSTO OPERACIONAL DAS COMPANHIAS DE ENERGIA ELÉTRICA
+  ### CONSTRUÇÃO DE MODELO QUE REFLITA AS REGRAS DE NEGÓCIO DO SETOR ELÉTRICO (BETA >0)
+  ### COMPARATIVO DA PERFORMANCE DO MODELO PROPOSTO COM DEMAIS TÉCNICAS
   
   ### CARREGAMENTO DE PACOTES
   
@@ -178,10 +181,10 @@
   
   ### Linear Regressions
   
-  ### Analisando o R2 de cada variavel
+  ### Analisando o R2 de cada variavel separadamente
   exploreR::masslm(dbcor,"PMSO")
   
-  ### modelo linear com todas as variaveis
+  ### modelo linear múltiplo com todas as variaveis
   modelo = lm(PMSO ~ ., data=dbcor)
   summary(modelo)
   plot(modelo, lty=0, pch=19, col="blue")
@@ -189,6 +192,7 @@
   
   ### Shapiro-Wilk test | Null-hypothesis: population is normally distributed
   ### If p-value < alpha then nul-=hypothesis is rejected.
+  ### standard alpha : 0.05
   
   shapiro.test(residuals(modelo))
   cat('Evidencias de que os residuos nao sao normalmente distribuidos')
