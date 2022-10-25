@@ -92,7 +92,7 @@
   # X1: Extensão de rede menor que 230 kV                                 ###
   # X2: Extensão de rede superior que 230 kV                              ###
   # X3: Potência aparente total, em MVA, de equipamentos de subestação    ###
-  # x4: PotÇencia reativa total, em Mvar, de equipamentos de subestação   ###
+  # x4: Potência reativa total, em Mvar, de equipamentos de subestação   ###
   # X5: Equipamentos de subestação com tensão inferior a 230 kV           ###
   # X6: Equipamentos de subestação com tensão superior a 230 kV           ###
   # X7: Módulos de manobra com tensão inferior a 230 kV                   ###
@@ -202,21 +202,21 @@
   ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
   
   ### Exemplo de programação linear
-  
-  # Set up problem -> max: x1 + 9 x2 + x3 
-  
-  # subject to
-  # x1 + 2 x2 + 3 x3 <= 9
-  # 3 x1 + 2 x2 + 2 x3 <= 15
-  
-  
-  # f.obj <- c(1, 9, 1)
-  # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
-  # f.dir <- c("<=", "<=")
-  # f.rhs <- c(9, 15)
-  # lp ("max", f.obj, f.con, f.dir, f.rhs)
-  # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
-  
+
+  ### up problem -> max: x1 + 9 x2 + x3
+  ### subject to
+  ### x1 + 2 x2 + 3 x3 <= 9
+  ### 3 x1 + 2 x2 + 2 x3 <= 15
+
+
+   f.obj <- c(1, 9, 1)
+   f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
+   f.dir <- c("<=", "<=")
+   f.rhs <- c(9, 15)
+   lp ("max", f.obj, f.con, f.dir, f.rhs)
+   lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
+   ?lpSolve::lp()
+
   
   
 
