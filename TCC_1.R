@@ -209,13 +209,13 @@
   ### 3 x1 + 2 x2 + 2 x3 <= 15
 
 
-   f.obj <- c(1, 9, 1)
-   f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
-   f.dir <- c("<=", "<=")
-   f.rhs <- c(9, 15)
-   lp ("max", f.obj, f.con, f.dir, f.rhs)
-   lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
-   ?lpSolve::lp()
+   # f.obj <- c(1, 9, 1)
+   # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
+   # f.dir <- c("<=", "<=")
+   # f.rhs <- c(9, 15)
+   # lp ("max", f.obj, f.con, f.dir, f.rhs)
+   # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
+   # ?lpSolve::lp()
 
   
   
