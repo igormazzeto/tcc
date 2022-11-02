@@ -77,7 +77,7 @@
   ### Leitura de dados
   
   ### MacOS
-  dados =  read_excel("7. Especialização/3. TCC/3. Códigos/tcc/BaseCompilada_TS14_2022.xlsx", 
+  dados =  read_excel("~/Library/CloudStorage/OneDrive-Pessoal/Documentos/7. Especialização/3. TCC/3. Códigos/tcc/BaseCompilada_TS14_2022.xlsx", 
                    sheet = "DadosEscores")
   
   ###  Windows
@@ -218,6 +218,9 @@
    # ?lpSolve::lp()
 
   
+  m = data.matrix(db[5:12])
+  y = db$PMSO
+  f.dir <- c(replicate(n = length(y),"="))
   
 
     
