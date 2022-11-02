@@ -12,7 +12,7 @@
 
   ### "Que haja uma luz nos lugares mais escuros, quando todas as outras luzes se apagarem." JRR Tolkien
   
-  ### Do not be afraid of your difficulties.Do not wish you could be in other circumstances than you are.
+  ### Do not be afraid of your difficulties. Do not wish you could be in other circumstances than you are.
   ### For when you have made the best of an adversity, it becomes the stepping stone to a splendid opportunity.
 
   ### virtus et scientia | pro scientia atque sapientia
@@ -81,9 +81,9 @@
                    sheet = "DadosEscores")
   
   ###  Windows
-  # library(readxl)
-  # dados <- read_excel("BaseCompilada_TS14_2022.xlsx", 
-  #                                       sheet = "DadosEscores")
+  library(readxl)
+  dados <- read_excel("BaseCompilada_TS14_2022.xlsx",
+                                        sheet = "DadosEscores")
   
   # View(dados)  
   
@@ -151,6 +151,8 @@
   corrplot(matCor, type="upper",
              order="AOE", diag=FALSE, addgrid.col=NA,
              outline=TRUE)
+  
+  
   ### Boxplots
   
   with(db,
@@ -208,20 +210,65 @@
   ### x1 + 2 x2 + 3 x3 <= 9
   ### 3 x1 + 2 x2 + 2 x3 <= 15
 
-
-   # f.obj <- c(1, 9, 1)
-   # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
-   # f.dir <- c("<=", "<=")
-   # f.rhs <- c(9, 15)
-   # lp ("max", f.obj, f.con, f.dir, f.rhs)
-   # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
-   # ?lpSolve::lp()
+  # f.obj <- c(1, 9, 1)
+  # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
+  # f.dir <- c("<=", "<=")
+  # f.rhs <- c(9, 15)
+  # lp ("max", f.obj, f.con, f.dir, f.rhs)
+  # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
+  # ?lpSolve::lp()
+  
+  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 
   
+  ### Implementação lp -> minimização de betas
+  
+  ### Modelo: 
+  ###
+  ### min sum(j in n) 0.5*e1_j + 0.5e2_j
+  ### 
+  ### subject to: 
+  ### 
+  ### y_j = alpha + beta_1*x1_j + beta_2*x_2_j + 
+  ###       beta_3*x_3_j + beta_4*x_4_j + 
+  ###       beta_5*x_5_j + beta_6*x_6_j +
+  ###       beta_7*x_7_j + beta_8*x_8_j + 
+  ###       e1_j - e2_j
+  ### 
+  ### beta_i >= 0
+  ### 
+ 
+  
+  ### Função objetivo
+  # A ser implementado
+  
+  ### matriz com instâncias do problema
   m = data.matrix(db[5:12])
-  y = db$PMSO
-  f.dir <- c(replicate(n = length(y),"="))
   
+  n = length(m[,1])
+  
+  ### Coeficientes erros e1 e e2
+  e1 = replicate(n = n,1)
+  e2 = replicate(n = n ,-1)
+  
+  ### alpha
+  # A ser implementado
+  
+  ### Matriz com as variáveis de erro (constraints)
+  f.con = cbind(m,e1,e2)
+  
+  ###  Sinal da restrição
+  f.dir <- c(replicate(n = n,"="))
+  
+  ### Vetor com valores das restrições
+  f.rhs = db$PMSO
+  
+  
+  ### Execução do modelo
+  lp ("min", f.obj, f.con, f.dir, f.rhs)
+  lp ("min", f.obj, f.con, f.dir, f.rhs)$solution
+  
+
 
     
   
