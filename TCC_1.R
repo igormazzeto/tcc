@@ -135,14 +135,14 @@
   
   ### Scatter plots
   #par(mfrow=c(4,2))
-    plot(PMSO ~ X1, data=db, pch=19, col="dark blue", main =  'PMSO x X1')
-    plot(PMSO ~ X2, data=db, pch=19, col="red", main =  'PMSO x X2')
-    plot(PMSO ~ X3, data=db, pch=19, col="green", main =  'PMSO x X3')
-    plot(PMSO ~ X4, data=db, pch=19, col="cyan", main =  'PMSO x X4')
-    plot(PMSO ~ X5, data=db, pch=19, col="grey", main =  'PMSO x X5')
-    plot(PMSO ~ X6, data=db, pch=19, col="orange", main =  'PMSO x X6')
-    plot(PMSO ~ X7, data=db, pch=19, col="purple", main =  'PMSO x X7')
-    plot(PMSO ~ X8, data=db, pch=19, col="black", main =  'PMSO x X8')
+    plot(PMSO ~ X1, data=db, pch=19, col="dark blue", main =  ""); title(main = "PMSO x X1")
+    plot(PMSO ~ X2, data=db, pch=19, col="red", main =""); title(main = "PMSO x X2")
+    plot(PMSO ~ X3, data=db, pch=19, col="green", main =""); title(main = "PMSO x X3")
+    plot(PMSO ~ X4, data=db, pch=19, col="cyan", main =""); title(main = "PMSO x X4")
+    plot(PMSO ~ X5, data=db, pch=19, col="grey",main =""); title(main = "PMSO x X5")
+    plot(PMSO ~ X6, data=db, pch=19, col="orange",main =""); title(main = "PMSO x X6")
+    plot(PMSO ~ X7, data=db, pch=19, col="purple", main =""); title(main = "PMSO x X7")
+    plot(PMSO ~ X8, data=db, pch=19, col="black",main =""); title(main = "PMSO x 8")
 
   ### Correlation plots
   dbcor = with(db,dplyr::select(db, PMSO,X1,X2,X3,X4,X5,X6,X7,X8))
@@ -237,12 +237,8 @@
   ### 
   ### beta_i >= 0
   ### 
- 
-  
-  ### Função objetivo
-  # A ser implementado
-  
-  ### matriz com instâncias do problema
+
+  ### matriz com instâncias do problema (coeficientes para beta)
   m = data.matrix(db[5:12])
   
   n = length(m[,1])
@@ -251,18 +247,32 @@
   e1 = replicate(n = n,1)
   e2 = replicate(n = n ,-1)
   
+  ### Variáveis para a f.obj
+  beta1 = replicate(n = n,0)
+  beta2 = replicate(n = n,0)
+  beta3 = replicate(n = n,0)
+  beta4 = replicate(n = n,0)
+  beta5 = replicate(n = n,0)
+  beta6 = replicate(n = n,0)
+  beta7 = replicate(n = n,0)
+  beta8 = replicate(n = n,0)
+  e1_obj = replicate(n = n,0.5)
+  e2_obj = replicate(n = n,0.5)
+
   ### alpha
-  # A ser implementado
+  alpha = replicate(n = n,1)
   
-  ### Matriz com as variáveis de erro (constraints)
-  f.con = cbind(m,e1,e2)
+  ### Matriz de restrições (constraints)
+  f.con = cbind(alpha,m,e1,e2)
   
   ###  Sinal da restrição
   f.dir <- c(replicate(n = n,"="))
   
   ### Vetor com valores das restrições
   f.rhs = db$PMSO
+
   
+  f.obj = cbind(c(replicate(n = n,0)),beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8,e1_obj,e2_obj)
   
   ### Execução do modelo
   lp ("min", f.obj, f.con, f.dir, f.rhs)
