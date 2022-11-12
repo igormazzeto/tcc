@@ -29,6 +29,7 @@
   
   rm(list = ls(all = TRUE))
   
+  
   if(!require(ggplot2)) install.packages("ggplot2") else library(ggplot2)
   if(!require(ggalt)) install.packages("ggalt") else library(ggalt)
   if(!require(dplyr)) install.packages("dplyr") else library(dplyr)
@@ -142,7 +143,7 @@
     plot(PMSO ~ X5, data=db, pch=19, col="grey",main =""); title(main = "PMSO x X5")
     plot(PMSO ~ X6, data=db, pch=19, col="orange",main =""); title(main = "PMSO x X6")
     plot(PMSO ~ X7, data=db, pch=19, col="purple", main =""); title(main = "PMSO x X7")
-    plot(PMSO ~ X8, data=db, pch=19, col="black",main =""); title(main = "PMSO x 8")
+    plot(PMSO ~ X8, data=db, pch=19, col="black",main =""); title(main = "PMSO x X8")
 
   ### Correlation plots
   dbcor = with(db,dplyr::select(db, PMSO,X1,X2,X3,X4,X5,X6,X7,X8))
@@ -199,27 +200,7 @@
   shapiro.test(residuals(modelo))
   cat('Evidencias de que os residuos nao sao normalmente distribuidos')
   
-    
   
-  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
-  
-  ### Exemplo de programação linear
-
-  ### up problem -> max: x1 + 9 x2 + x3
-  ### subject to
-  ### x1 + 2 x2 + 3 x3 <= 9
-  ### 3 x1 + 2 x2 + 2 x3 <= 15
-
-  # f.obj <- c(1, 9, 1)
-  # f.con <- matrix (c(1, 2, 3, 3, 2, 2), nrow=2, byrow=TRUE)
-  # f.dir <- c("<=", "<=")
-  # f.rhs <- c(9, 15)
-  # lp ("max", f.obj, f.con, f.dir, f.rhs)
-  # lp ("max", f.obj, f.con, f.dir, f.rhs)$solution
-  # ?lpSolve::lp()
-  
-  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
-
   
   ### Implementação lp -> minimização de betas
   
@@ -229,57 +210,146 @@
   ### 
   ### subject to: 
   ### 
-  ### y_j = alpha + beta_1*x1_j + beta_2*x_2_j + 
-  ###       beta_3*x_3_j + beta_4*x_4_j + 
-  ###       beta_5*x_5_j + beta_6*x_6_j +
-  ###       beta_7*x_7_j + beta_8*x_8_j + 
-  ###       e1_j - e2_j
+  ### (e1_j - e2_j) + (alpha1 - alpha2)  +
+  ### beta_1*x1_j + beta_2*x_2_j + 
+  ### beta_3*x_3_j + beta_4*x_4_j + 
+  ### beta_5*x_5_j + beta_6*x_6_j +
+  ### beta_7*x_7_j + beta_8*x_8_j  = y_j 
+  ###      
   ### 
   ### beta_i >= 0
   ### 
-
+  
+  
+  
+  ### IMPLEMENTAÇÃO IMRS (10/2022)
   ### matriz com instâncias do problema (coeficientes para beta)
-  m = data.matrix(db[5:12])
-  
-  n = length(m[,1])
-  
-  ### Coeficientes erros e1 e e2
-  e1 = replicate(n = n,1)
-  e2 = replicate(n = n ,-1)
-  
-  ### Variáveis para a f.obj
-  beta1 = replicate(n = n,0)
-  beta2 = replicate(n = n,0)
-  beta3 = replicate(n = n,0)
-  beta4 = replicate(n = n,0)
-  beta5 = replicate(n = n,0)
-  beta6 = replicate(n = n,0)
-  beta7 = replicate(n = n,0)
-  beta8 = replicate(n = n,0)
-  e1_obj = replicate(n = n,0.5)
-  e2_obj = replicate(n = n,0.5)
+  # m = data.matrix(db[5:12])
+  # 
+  # n = length(m[,1])
+  # 
+  # ### Coeficientes erros e1 e e2
+  # e1 = replicate(n = n,1)
+  # e2 = replicate(n = n ,-1)
+  # 
+  # ### Variáveis para a f.obj
+  # beta1 = replicate(n = n,0)
+  # beta2 = replicate(n = n,0)
+  # beta3 = replicate(n = n,0)
+  # beta4 = replicate(n = n,0)
+  # beta5 = replicate(n = n,0)
+  # beta6 = replicate(n = n,0)
+  # beta7 = replicate(n = n,0)
+  # beta8 = replicate(n = n,0)
+  # e1_obj = replicate(n = n,0.5)
+  # e2_obj = replicate(n = n,0.5)
 
-  ### alpha
-  alpha = replicate(n = n,1)
+  # ### alpha
+  # alpha = replicate(n = n,1)
+  # 
+  # ### Matriz de restrições (constraints)
+  # f.con = cbind(alpha,m,e1,e2)
+  # 
+  # ###  Sinal da restrição
+  # f.dir <- c(replicate(n = n,"="))
+  # 
+  # ### Vetor com valores das restrições
+  # f.rhs = db$PMSO
+  # 
   
-  ### Matriz de restrições (constraints)
-  f.con = cbind(alpha,m,e1,e2)
+  # f.obj = cbind(c(replicate(n = n,0)),beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8,e1_obj,e2_obj)
+  # 
+  # ### Execução do modelo
+  # lp ("min", f.obj, f.con, f.dir, f.rhs)
+  # lp ("min", f.obj, f.con, f.dir, f.rhs)$solution
   
-  ###  Sinal da restrição
-  f.dir <- c(replicate(n = n,"="))
+  ### Implementação orientações Prof. Marcelo Azevedo Costa (11/11/2022)
   
-  ### Vetor com valores das restrições
-  f.rhs = db$PMSO
-
+  ### AJuste modelo linear via programação linear
   
-  f.obj = cbind(c(replicate(n = n,0)),beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8,e1_obj,e2_obj)
+  y = db$PMSO
+  x1 = db$X1
+  x2 = db$X2
+  x3 = db$X3
+  x4 = db$X4
+  x5 = db$X5
+  x6 = db$X6
+  x7 = db$X7
+  x8 = db$X8
+  N = nrow(db)
+  tau = 0.5
   
-  ### Execução do modelo
-  lp ("min", f.obj, f.con, f.dir, f.rhs)
-  lp ("min", f.obj, f.con, f.dir, f.rhs)$solution
   
-
-
+  ### (tau*e1,tau*e2,alfa1,alfa2,x1,x2  )
+  f.obj = c(rep(tau,N), rep(1-tau,N),0,0
+             ,0
+            # ,0
+            # ,0
+            # ,0
+            # ,0
+            # ,0
+            # ,0
+            # ,0
+        )
+  
+  ### Constraints || inicialização
+  
+  f.con = NULL
+  
+  for(cont in 1:nrow(db)){
+    e1 = rep(0, nrow(db)) # Inicializacao do vetor de erro (positivo)
+    e2 = rep(0, nrow(db)) # Inicializacao do vetor de erro (negativo)
     
+    ### Atribuição dos coeficientes
+    e1[cont] = +1
+    e2[cont] = -1
+    
+    ### f.aux -> atribuição dos coeficientes de xi
+    f.aux <- c(e1, e2, +1, -1, x2[cont]
+                               # ,x2[cont]
+                               # ,x3[cont]
+                               # ,x4[cont]
+                               # ,x5[cont]
+                               # ,x6[cont]
+                               # ,x7[cont]
+                               # ,x8[cont]
+               )
+    
+    f.con <- rbind(f.con, f.aux)
+    
+  }
   
+ # View(f.con)
+
+  f.dir = rep("=", N)
+  f.rhs = y
+  
+  ### Gera a solucao
+  saida   = lpSolve::lp ("min", f.obj, f.con, f.dir, f.rhs)
+  solucao = saida$solution
+  
+
+  ### Para algumas componentes: erro e intercepto existem as
+  ### 'partes' positivas e negativas. Entao, o valor final eh a
+  ### diferenca entre essas partes.
+  erros <- solucao[1:N] - solucao[(N+1):(2*N)]
+  alpha <- solucao[(2*N)+1] - solucao[(2*N)+2]
+  beta1 <- solucao[(2*N)+3]
+  # beta2 <- solucao[(2*N)+4]
+  # beta3 <- solucao[(2*N)+5]
+  # beta4 <- solucao[(2*N)+6]
+  # beta5 <- solucao[(2*N)+7]
+  # beta6 <- solucao[(2*N)+8]
+  # beta7 <- solucao[(2*N)+9]
+  # beta8 <- solucao[(2*N)+10]
+  
+ plot(PMSO ~ X2, data=db, pch=19, col="blue")
+ # plot(PMSO ~ X2, data=db, pch=19, col="blue")
+ # plot(PMSO ~ X3, data=db, pch=19, col="blue")
+ # plot(PMSO ~ X4, data=db, pch=19, col="blue")
+ # plot(PMSO ~ X5, data=db, pch=19, col="blue")
+ # plot(PMSO ~ X6, data=db, pch=19, col="blue")
+ # plot(PMSO ~ X7, data=db, pch=19, col="blue")
+ # plot(PMSO ~ X8, data=db, pch=19, col="blue")
+ abline(a=alpha, b=beta1, lwd=2, col="black")
   
