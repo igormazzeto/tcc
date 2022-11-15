@@ -87,20 +87,7 @@
                                         sheet = "DadosEscores")
   
   # View(dados)  
-  
-  ### Variáveis do modelo ### ### ### ### ### ### ### ### ### ### ### ### ###
-  ###                                                                     ###
-  # X1: Extensão de rede menor que 230 kV                                 ###
-  # X2: Extensão de rede superior que 230 kV                              ###
-  # X3: Potência aparente total, em MVA, de equipamentos de subestação    ###
-  # x4: Potência reativa total, em Mvar, de equipamentos de subestação   ###
-  # X5: Equipamentos de subestação com tensão inferior a 230 kV           ###
-  # X6: Equipamentos de subestação com tensão superior a 230 kV           ###
-  # X7: Módulos de manobra com tensão inferior a 230 kV                   ###
-  # X8: Módulos de manobra com tensão igual ou superior a 230 kV          ###
-  # X9: Qualiodade (não utilizada)                                        ###
-  # Y : PMSO (variável resposta)                                          ###
-  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+
   
   ### Estatísticas - resumo
   summary(dados)
@@ -109,22 +96,52 @@
   dados$IdAgente = as.character(dados$IdAgente)
   
   ### dataset com variáveis do modelo
+  
   db = with(dados,dplyr::select(dados, Concessionaria, Tipo,
                         Ano, PMSO, rede.menor.230,
                         rede.maior.230,MVA,Mvar,
                         modulos.sub.menor230,modulos.sub.maior230,
                         modulos.manobra.menor230,modulos.manobra.maior230))
   
-  ### Modificacao dos nomes das variaveis
-  names(db)[5]  = "X1"
-  names(db)[6]  = "X2"
-  names(db)[7]  = "X3"
-  names(db)[8]  = "X4"
-  names(db)[9]  = "X5"
-  names(db)[10] = "X6"
-  names(db)[11] = "X7"
-  names(db)[12] = "X8"
+  ### VERIFICA VARIÁVEIS COM MAIOR R² PARA RENOMEAR VARIÁVEIS
+  ### Pré análise
+  # rm(list="modelo_mass")
+ 
   
+  modelo_mass = masslm(db[,4:12], "PMSO")
+  modelo_mass =  as.data.frame(modelo_mass)
+  modelo_mass = modelo_mass[order(modelo_mass$R.squared,decreasing = TRUE),]
+  print(modelo_mass)
+  
+
+  ### Variáveis do modelo ### ### ### ### ### ### ### ### ### ### ### ### ###
+  ### Ordenadas de acordo com a ordem crescem de pré-análise do R²        ###
+  ###                                                                     ###
+  # X1: Extensão de rede superior que 230 kV                              ###
+  # X2: Módulos de manobra com tensão igual ou superior a 230 kV          ###
+  # X3: Equipamentos de subestação com tensão superior a 230 kV           ###
+  # x4: Potência aparente total, em MVA, de equipamentos de subestação    ###
+  # X5: Potência reativa total, em Mvar, de equipamentos de subestação    ###
+  # X6: Equipamentos de subestação com tensão inferior a 230 kV           ###
+  # X7: Módulos de manobra com tensão inferior a 230 kV                   ###
+  # X8: Extensão de rede menor que 230 kV                                 ###
+  # X9: Qualidade (não utilizada) ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ###
+  # Y : PMSO (variável resposta)                                          ###
+  #                                                                       ###
+  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+
+  ### Modificacao dos nomes das variaveis
+  
+  colnames(db)[colnames(db) == modelo_mass$IV[1]] = "X1"
+  colnames(db)[colnames(db) == modelo_mass$IV[2]] = "X2"
+  colnames(db)[colnames(db) == modelo_mass$IV[3]] = "X3"
+  colnames(db)[colnames(db) == modelo_mass$IV[4]] = "X4"
+  colnames(db)[colnames(db) == modelo_mass$IV[5]] = "X5"
+  colnames(db)[colnames(db) == modelo_mass$IV[6]] = "X6"
+  colnames(db)[colnames(db) == modelo_mass$IV[7]] = "X7"
+  colnames(db)[colnames(db) == modelo_mass$IV[8]] = "X8"
+  
+
   # View(db)
   
   ### Gráficos
@@ -153,9 +170,7 @@
              order="AOE", diag=FALSE, addgrid.col=NA,
              outline=TRUE)
   
-  
   ### Boxplots
-  
   with(db,
   boxplot(PMSO ~ Ano,
           main="PMSO anual", 
@@ -191,6 +206,7 @@
   modelo = lm(PMSO ~ ., data=dbcor)
   summary(modelo)
   plot(modelo, lty=0, pch=19, col="blue")
+  
   modelo$coefficients
   
   ### Shapiro-Wilk test | Null-hypothesis: population is normally distributed
@@ -218,138 +234,174 @@
   ###      
   ### 
   ### beta_i >= 0
-  ### 
-  
-  
-  
-  ### IMPLEMENTAÇÃO IMRS (10/2022)
-  ### matriz com instâncias do problema (coeficientes para beta)
-  # m = data.matrix(db[5:12])
-  # 
-  # n = length(m[,1])
-  # 
-  # ### Coeficientes erros e1 e e2
-  # e1 = replicate(n = n,1)
-  # e2 = replicate(n = n ,-1)
-  # 
-  # ### Variáveis para a f.obj
-  # beta1 = replicate(n = n,0)
-  # beta2 = replicate(n = n,0)
-  # beta3 = replicate(n = n,0)
-  # beta4 = replicate(n = n,0)
-  # beta5 = replicate(n = n,0)
-  # beta6 = replicate(n = n,0)
-  # beta7 = replicate(n = n,0)
-  # beta8 = replicate(n = n,0)
-  # e1_obj = replicate(n = n,0.5)
-  # e2_obj = replicate(n = n,0.5)
-
-  # ### alpha
-  # alpha = replicate(n = n,1)
-  # 
-  # ### Matriz de restrições (constraints)
-  # f.con = cbind(alpha,m,e1,e2)
-  # 
-  # ###  Sinal da restrição
-  # f.dir <- c(replicate(n = n,"="))
-  # 
-  # ### Vetor com valores das restrições
-  # f.rhs = db$PMSO
-  # 
-  
-  # f.obj = cbind(c(replicate(n = n,0)),beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8,e1_obj,e2_obj)
-  # 
-  # ### Execução do modelo
-  # lp ("min", f.obj, f.con, f.dir, f.rhs)
-  # lp ("min", f.obj, f.con, f.dir, f.rhs)$solution
   
   ### Implementação orientações Prof. Marcelo Azevedo Costa (11/11/2022)
+  ### Ajuste modelo linear via programação linear
   
-  ### AJuste modelo linear via programação linear
-  
+  ### Parametros
+  ### 
   y = db$PMSO
-  x1 = db$X1
-  x2 = db$X2
-  x3 = db$X3
-  x4 = db$X4
-  x5 = db$X5
-  x6 = db$X6
-  x7 = db$X7
-  x8 = db$X8
   N = nrow(db)
   tau = 0.5
   
-  
-  ### (tau*e1,tau*e2,alfa1,alfa2,x1,x2  )
-  f.obj = c(rep(tau,N), rep(1-tau,N),0,0
-             ,0
-            # ,0
-            # ,0
-            # ,0
-            # ,0
-            # ,0
-            # ,0
-            # ,0
-        )
-  
-  ### Constraints || inicialização
-  
-  f.con = NULL
-  
-  for(cont in 1:nrow(db)){
-    e1 = rep(0, nrow(db)) # Inicializacao do vetor de erro (positivo)
-    e2 = rep(0, nrow(db)) # Inicializacao do vetor de erro (negativo)
-    
-    ### Atribuição dos coeficientes
-    e1[cont] = +1
-    e2[cont] = -1
-    
-    ### f.aux -> atribuição dos coeficientes de xi
-    f.aux <- c(e1, e2, +1, -1, x2[cont]
-                               # ,x2[cont]
-                               # ,x3[cont]
-                               # ,x4[cont]
-                               # ,x5[cont]
-                               # ,x6[cont]
-                               # ,x7[cont]
-                               # ,x8[cont]
-               )
-    
-    f.con <- rbind(f.con, f.aux)
-    
-  }
-  
- # View(f.con)
 
-  f.dir = rep("=", N)
-  f.rhs = y
+  ### Vetor com parametros
+  v = c(db$X1,db$X2,db$X3,db$X4,db$X5,db$X6,db$X7,db$X8)
   
-  ### Gera a solucao
-  saida   = lpSolve::lp ("min", f.obj, f.con, f.dir, f.rhs)
-  solucao = saida$solution
+  ### Matriz para iteracao
+  m1 = matrix(data = v,nrow = nrow(db),ncol = 8)
+  # m1[,1] == db$X1
   
+  ### Matriz auxiliar para armazenar alphas e betas
+  maux = matrix(data = rep(0,nrow(modelo_mass)*2),
+                nrow = 2 ,
+                ncol = nrow(modelo_mass))
+ 
+  
+  ### Matriz para armazenar os erros
+  erros_var = matrix(data = rep(0),nrow = nrow(db),ncol = 8)
+  contador = 0
+  
+  ### Procedimento para otimizar o beta de cada regressao com a variave 'k'
+  ### Variaveis: X1 a X8 -> x_k
+  
+  
+  for(k in 1:8){
+    
+    ### cada valor de k representa uma variavel onde o beta sera regredida
+    
+    ### Inicializacao
+    
+    f.con = NULL
+    f.obj = NULL
+    f.con = NULL
+    f.dir = NULL
+    y = db$PMSO
 
-  ### Para algumas componentes: erro e intercepto existem as
-  ### 'partes' positivas e negativas. Entao, o valor final eh a
-  ### diferenca entre essas partes.
-  erros <- solucao[1:N] - solucao[(N+1):(2*N)]
-  alpha <- solucao[(2*N)+1] - solucao[(2*N)+2]
-  beta1 <- solucao[(2*N)+3]
-  # beta2 <- solucao[(2*N)+4]
-  # beta3 <- solucao[(2*N)+5]
-  # beta4 <- solucao[(2*N)+6]
-  # beta5 <- solucao[(2*N)+7]
-  # beta6 <- solucao[(2*N)+8]
-  # beta7 <- solucao[(2*N)+9]
-  # beta8 <- solucao[(2*N)+10]
+    ### (tau*e1,tau*e2,alfa1,alfa2,xx  )
+    f.obj = c(rep(tau,N), rep(1-tau,N),0,0,0)
+    
+    ### Constraints || inicialização
+    for(cont in 1:nrow(db)){
+      e1 = rep(0, nrow(db)) # Inicializacao do vetor de erro (positivo)
+      e2 = rep(0, nrow(db)) # Inicializacao do vetor de erro (negativo)
+        
+      ### Atribuição dos coeficientes
+      e1[cont] = +1
+      e2[cont] = -1
+        
+      ### f.aux -> atribuição dos coeficientes de xi
+      f.aux <- c(e1, e2, +1, -1,m1[cont,k])
+      f.con <- rbind(f.con, f.aux)
+      } 
+      
+    # View(f.con)
+    f.dir = rep("=", N)
+    f.rhs = y
+      
+    ### Gera a solucao
+    saida   = lpSolve::lp ("min", f.obj, f.con, f.dir, f.rhs)
+    solucao = saida$solution
+      
+    ### Para algumas componentes: erro e intercepto existem as
+    ### 'partes' positivas e negativas. Entao, o valor final eh a
+    ### diferenca entre essas partes.
+      
+    erros_var[,k] = solucao[1:N] - solucao[(N+1):(2*N)]
+    maux[1,k] = solucao[(2*N)+1] - solucao[(2*N)+2]
+    maux[2,k] = solucao[(2*N)+3]
+      
+    contador = contador+1
+    } 
+    
+
+    dados_regressoes = as.data.frame(maux)
+    colnames(dados_regressoes)[1] = "X1"
+    colnames(dados_regressoes)[2] = "X2"
+    colnames(dados_regressoes)[3] = "X3"
+    colnames(dados_regressoes)[4] = "X4"
+    colnames(dados_regressoes)[5] = "X5"
+    colnames(dados_regressoes)[6] = "X6"
+    colnames(dados_regressoes)[7] = "X7"
+    colnames(dados_regressoes)[8] = "X8"
+    rownames(dados_regressoes)[1] = "alpha"
+    rownames(dados_regressoes)[2] = "beta"
+    dados_regressoes
+    
+  ###  GRAFICOS COM OS AJUSTES PARA TAU = 0.5
+
+  # par(mfrow=c(4,2))
+    plot(PMSO ~ X1, data=db, pch=19, col="dark blue");title(main = "PMSO x X1")
+    abline(a=dados_regressoes[1,1], b=dados_regressoes[2,1], lwd=2,lty = 2, col="red")
   
- plot(PMSO ~ X2, data=db, pch=19, col="blue")
- # plot(PMSO ~ X2, data=db, pch=19, col="blue")
- # plot(PMSO ~ X3, data=db, pch=19, col="blue")
- # plot(PMSO ~ X4, data=db, pch=19, col="blue")
- # plot(PMSO ~ X5, data=db, pch=19, col="blue")
- # plot(PMSO ~ X6, data=db, pch=19, col="blue")
- # plot(PMSO ~ X7, data=db, pch=19, col="blue")
- # plot(PMSO ~ X8, data=db, pch=19, col="blue")
- abline(a=alpha, b=beta1, lwd=2, col="black")
+    plot(PMSO ~ X2, data=db, pch=19, col="black");title(main = "PMSO x X2")
+    abline(a=dados_regressoes[1,2], b=dados_regressoes[2,2], lwd=2,lty = 2, col="red")
+    
+    plot(PMSO ~ X3, data=db, pch=19, col="green");title(main = "PMSO x X3")
+    abline(a=dados_regressoes[1,3], b=dados_regressoes[2,3], lwd=2,lty = 2, col="red")
+    
+    plot(PMSO ~ X4, data=db, pch=19, col="cyan");title(main = "PMSO x X4")
+    abline(a=dados_regressoes[1,4], b=dados_regressoes[2,4], lwd=2,lty = 2, col="red")
+    
+    plot(PMSO ~ X5, data=db, pch=19, col="grey");title(main = "PMSO x X5")
+    abline(a=dados_regressoes[1,5], b=dados_regressoes[2,5], lwd=2,lty = 2, col="red")
+    
+    plot(PMSO ~ X6, data=db, pch=19, col="orange");title(main = "PMSO x X6")
+    abline(a=dados_regressoes[1,6], b=dados_regressoes[2,6], lwd=2,lty = 2, col="red")
+    
+    plot(PMSO ~ X7, data=db, pch=19, col="purple");title(main = "PMSO x X7")
+    abline(a=dados_regressoes[1,7], b=dados_regressoes[2,7], lwd=2,lty = 2, col="red")
+    
+    plot(PMSO ~ X8, data=db, pch=19, col="blue");title(main = "PMSO x X7")
+    abline(a=dados_regressoes[1,8], b=dados_regressoes[2,], lwd=1, lty = 2, col="red")
+    
+  
+  ### ### ### ### ### ### MODELO COM TODAS AS VARIAVEIS ### ### ### ### ### 
+  
+    
+    ### Todas as variaveis sao inputadas no modelo
+    ### 
+    
+     x1 = db$X1;x2 = db$X2;x3 = db$X3; x4 = db$X4;
+     x5 = db$X5;x6 = db$X6;x7 = db$X7;x8 = db$X8
+    
+    f.obj_t = c(rep(tau,N), rep(1-tau,N),0,0,0,0,0,0,0,0,0,0)
+    f.con_t = NULL
+    
+    ### Constraints || inicialização
+    for(cont in 1:nrow(db)){
+      e1 = rep(0, nrow(db)) # Inicializacao do vetor de erro (positivo)
+      e2 = rep(0, nrow(db)) # Inicializacao do vetor de erro (negativo)
+      e1[cont] = +1
+      e2[cont] = -1
+      f.aux <- c(e1, e2, +1, -1,x1[cont],x2[cont],x3[cont],x4[cont],x5[cont],x6[cont],x7[cont],x8[cont])
+      f.con_t <- rbind(f.con_t, f.aux)
+    } 
+    
+    # View(f.con)
+    f.dir_t = rep("=", N)
+    f.rhs_t = y
+    
+    ### Gera a solucao
+    saida_t   = lpSolve::lp ("min", f.obj_t, f.con_t, f.dir_t, f.rhs_t)
+    solucao_t = saida_t$solution
+    
+    ### Erros, alpha e beta
+    
+    erros = solucao_t[1:N] - solucao_t[(N+1):(2*N)]
+    alpha = solucao_t[(2*N)+1] - solucao_t[(2*N)+2]
+    
+    ### vetor para receber os valores dos betas
+    betas = NULL
+    for(i in 1:8){
+      betas[i] = solucao_t[(2*N)+(i+2)]
+    }
+    
+    resultado = c(alpha,betas)
+    resultado  
+    
+    
+    
+    
+  
   
