@@ -125,7 +125,6 @@
   # X6: Equipamentos de subestação com tensão inferior a 230 kV           ###
   # X7: Módulos de manobra com tensão inferior a 230 kV                   ###
   # X8: Extensão de rede menor que 230 kV                                 ###
-  # X9: Qualidade (não utilizada) ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ~~~ ###
   # Y : PMSO (variável resposta)                                          ###
   #                                                                       ###
   ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
@@ -140,9 +139,6 @@
   colnames(db)[colnames(db) == modelo_mass$IV[6]] = "X6"
   colnames(db)[colnames(db) == modelo_mass$IV[7]] = "X7"
   colnames(db)[colnames(db) == modelo_mass$IV[8]] = "X8"
-  
-
-  # View(db)
   
   ### Gráficos
   
@@ -326,7 +322,7 @@
     colnames(dados_regressoes)[8] = "X8"
     rownames(dados_regressoes)[1] = "alpha"
     rownames(dados_regressoes)[2] = "beta"
-    dados_regressoes
+    View(dados_regressoes)
     
   ###  GRAFICOS COM OS AJUSTES PARA TAU = 0.5
 
@@ -398,9 +394,17 @@
     }
     
     resultado = c(alpha,betas)
-    resultado  
-    
-    
+    resultado = as.data.frame(resultado)
+    rownames(resultado)[1] = "alpha"
+    rownames(resultado)[2] = "beta1"
+    rownames(resultado)[3] = "beta2"
+    rownames(resultado)[4] = "beta3"
+    rownames(resultado)[5] = "beta4"
+    rownames(resultado)[6] = "beta5"
+    rownames(resultado)[7] = "beta6"
+    rownames(resultado)[8] = "beta7"
+    rownames(resultado)[9] = "beta8"
+    View(resultado)
     
     
   
