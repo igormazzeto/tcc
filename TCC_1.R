@@ -99,6 +99,7 @@
                         modulos.sub.menor230,modulos.sub.maior230,
                         modulos.manobra.menor230,modulos.manobra.maior230))
   
+  View(db)
   ### VERIFICA VARIÁVEIS COM MAIOR R² PARA RENOMEAR VARIÁVEIS
   ### Pré análise
   # rm(list="modelo_mass")
@@ -432,7 +433,33 @@
     cat(fi[i])
     cat("\n")
   }
+  
+  ### Validação -  remover uma empresa completamente da base)
+  ### loop para retirar a empresa e estimar seu PMSO
+  ### Ajustar o modelo e estimar o custo operacional da empresa que foi removida
+  ### Calcular R2 preditivo
+  ### Realziar validacão cruzada
+  ### Calcular R2 -> usar logaritmo do PMSO
+  
+  ### Loop para calcular todas as empresas:
+  ### 1. Criar um vetor contendo o nome de cada empresa presente na base
+  ### 2. Pegar o tamanho do vetor
+  ### 3. Função que cria um subconjunto da base dedos excluindo a empresa selecionada
+  conc = db$Concessionaria
+  conc = concessionarias[!duplicated(concessionarias)]
+  nconc = length(concessionarias)
 
+  filter(db,Concessionaria!= conc[1])
+  
+  
+  for (i in 1:nconc){
+    
+    
+  }
+  
+  
+  
+  
   ### Modelo linear generalizado - Distribuicao Gama - Familia Exponencial  
   ### Variancia = µˆ2 
   ### Função de ligação -> linear
