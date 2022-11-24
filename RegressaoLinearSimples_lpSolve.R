@@ -78,3 +78,13 @@
  # regressao linear e o modelo de regressao obtido utilizando
  # o lpSolve.
  abline(a=alpha, b=beta, lwd=2, col="black")
+
+
+     plot(PMSO ~ X1, data=db, pch=19, col="dark blue", main =  ""); title(main = "PMSO x X1")
+    plot(PMSO ~ X2, data=db, pch=19, col="red", main =""); title(main = "PMSO x X2")
+    plot(PMSO ~ X3, data=db, pch=19, col="green", main =""); title(main = "PMSO x X3")
+    plot(PMSO ~ X4, data=db, pch=19, col="cyan", main =""); title(main = "PMSO x X4")
+    plot(PMSO ~ X5, data=db, pch=19, col="grey",main =""); title(main = "PMSO x X5")
+    plot(PMSO ~ X6, data=db, pch=19, col="orange",main =""); title(main = "PMSO x X6")
+    plot(PMSO ~ X7, data=db, pch=19, col="purple", main =""); title(main = "PMSO x X7")
+    plot(PMSO ~ X8, data=db, pch=19, col="black",main ="");

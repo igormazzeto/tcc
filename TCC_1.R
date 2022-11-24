@@ -12,10 +12,6 @@
 
   ### "Que haja uma luz nos lugares mais escuros, quando todas as outras luzes se apagarem." JRR Tolkien
   
-  ### Do not be afraid of your difficulties. Do not wish you could be in other circumstances than you are.
-  ### For when you have made the best of an adversity, it becomes the stepping stone to a splendid opportunity.
-
-  ### virtus et scientia | pro scientia atque sapientia
 
 
   ### DESCRIÇÃO DO PROBLEMA - TÓPICOS
@@ -348,7 +344,7 @@
     plot(PMSO ~ X7, data=db, pch=19, col="purple");title(main = "PMSO x X7")
     abline(a=dados_regressoes[1,7], b=dados_regressoes[2,7], lwd=2,lty = 2, col="red")
     
-    plot(PMSO ~ X8, data=db, pch=19, col="blue");title(main = "PMSO x X7")
+    plot(PMSO ~ X8, data=db, pch=19, col="blue");title(main = "PMSO x X8")
     abline(a=dados_regressoes[1,8], b=dados_regressoes[2,], lwd=1, lty = 2, col="red")
     
   
@@ -407,5 +403,55 @@
     View(resultado)
     
     
+  ### ANÁLISE DO R² PREDITO ###
+  
+  ### R-squared
+  ### Soma dos quadrados da regressao
+  ### Soma dos quadrados totais
+  
+  ### Calculo da media de PMSO para os calculcos do R squared
+  
+    y_ = mean(db$PMSO)
+  
+    
+    View(db)
+  ### Calculo dos residuos
+  
+  ### Preparacao de matriz para prever com o ajuste do modelo de programacao linear
+  mt = with(db,data.frame(X1,X2,X3,X4,X5,X6,X7,X8))
+  mt  = as.matrix(mt)
+  
+  ### Preparacao do vetor para a multiplicaca
+  param = as.vector(resultado[-1,])
+ 
+  
+  fi = NULL
+
+  for(i in 1:nrow(mt)){
+    fi[i] = (mt[i,] %*% param) + alpha
+    cat(fi[i])
+    cat("\n")
+  }
+
+  ### Modelo linear generalizado - Distribuicao Gama - Familia Exponencial  
+  ### Variancia = µˆ2 
+  ### Função de ligação -> linear
+  ### Motivação: superdispersão
+  ### compare.fits | model.comparison | flex.plot
+  
+  ### Implementação do modelo
+  modelo_gama = glm(PMSO ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 +X8, 
+                    family = Gamma,
+                    data = db)
+summary(modelo_gama)  
+  
+pgama = 1-pchisq(modelo_gama$deviance,modelo_gama$df.residual)
+pgama  
+
+plot(modelo_gama)    
+
+    
+
+  
   
   
