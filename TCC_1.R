@@ -9,69 +9,61 @@
   ### ORIENTADOR: PROF. DR. MARCELO AZEVEDO COSTA           ###
   #############################################################
   
-
   ### "Que haja uma luz nos lugares mais escuros, quando todas as outras luzes se apagarem." JRR Tolkien
   
-
-
   ### DESCRIÇÃO DO PROBLEMA - TÓPICOS
   
   ### PREVISÃO DO CUSTO OPERACIONAL DAS COMPANHIAS DE ENERGIA ELÉTRICA
   ### CONSTRUÇÃO DE MODELO QUE REFLITA AS REGRAS DE NEGÓCIO DO SETOR ELÉTRICO (BETA >0)
   ### COMPARATIVO DA PERFORMANCE DO MODELO PROPOSTO COM DEMAIS TÉCNICAS
   
-  ### CARREGAMENTO DE PACOTES
-  
+  ### ### ### ### ### ### ### ### ###  I. CARREGAMENTO DE PACOTES ### ### ### ### ### ### ### ### ### 
   
   rm(list = ls(all = TRUE))
-  
   
   if(!require(ggplot2)) install.packages("ggplot2") else library(ggplot2)
   if(!require(ggalt)) install.packages("ggalt") else library(ggalt)
   if(!require(dplyr)) install.packages("dplyr") else library(dplyr)
   if(!require(tidyverse)) install.packages("tidyverse") else library(tidyverse)
-  if(!require(gridExtra)) install.packages("gridExtra") else library(gridExtra)
-  if(!require(grid)) install.packages("grid") else library(grid)
+  #if(!require(gridExtra)) install.packages("gridExtra") else library(gridExtra)
+  #if(!require(grid)) install.packages("grid") else library(grid)
   if(!require(xlsx)) install.packages("xlsx") else library(xlsx)
   if(!require(openxlsx)) install.packages("openxlsx") else library(openxlsx)
   if(!require(corrplot)) install.packages("corrplot") else library(corrplot)
-  if(!require(kableExtra)) install.packages("kableExtra") else library(kableExtra)
-  if(!require(psych)) install.packages("psych") else library(psych)
+  #if(!require(kableExtra)) install.packages("kableExtra") else library(kableExtra)
+  #if(!require(psych)) install.packages("psych") else library(psych)
   if(!require(mvShapiroTest)) install.packages("mvShapiroTest") else library(mvShapiroTest)
   if(!require(MVar.pt)) install.packages(MVar.pt) else library(MVar.pt)
-  if(!require(kableExtra)) install.packages("kableExtra") else library(kableExtra)
-  if(!require(ppclust)) install.packages("ppclust") else library("ppclust")
-  if(!require(NbClust)) install.packages("NbClust") else library("NbClust")
+  #if(!require(kableExtra)) install.packages("kableExtra") else library(kableExtra)
+  #if(!require(ppclust)) install.packages("ppclust") else library("ppclust")
+  #if(!require(NbClust)) install.packages("NbClust") else library("NbClust")
   if(!require(packHV)) install.packages("packHV") else library(packHV)
   if(!require(readxl)) install.packages("reaxl") else library(readxl)
   if(!require(MASS)) install.packages("MASS") else library(MASS)
   if(!require(exploreR)) install.packages("exploreR") else library(exploreR)
-  if(!require(Hmisc)) install.packages("misc") else library(Hmisc)
-  if(!require(moments)) install.packages(moments) else require(moments)
+  #if(!require(Hmisc)) install.packages("misc") else library(Hmisc)
+  #if(!require(moments)) install.packages(moments) else require(moments)
   if(!require(openxlsx)) install.packages(openxlsx) else require(openxlsx)
-  if(!require(nortest)) install.packages(nortest) else require(nortest)
+  #if(!require(nortest)) install.packages(nortest) else require(nortest)
   if(!require(lmtest)) install.packages(lmtest) else require(lmtest)
   if(!require(forecast)) install.packages(forecast) else require(forecast)
-  if(!require(lubridate)) install.packages(lubridate) else library(lubridate)
+  #if(!require(lubridate)) install.packages(lubridate) else library(lubridate)
   #library(xlsx)
   if(!require(RColorBrewer)) install.packages("RColorBrewer") else library(RColorBrewer)
   #library(rcompanion)
-  require(ggpubr)
-  if(!require(rbcb)) install.packages("rbcb") else library(rbcb)
-  if(!require(qqplotr)) install.packages("qqplotr") else library(qqplotr)
-  if(!require(car)) install.packages("car") else library(car)
-  if(!require(pROC)) install.packages("pROC") else library(pROC)
-  if(!require(mlogit)) install.packages("mlogit") else library(mlogit)
-  if(!require(readr)) install.packages("readr") else library(readr)
-  if(!require(rpart)) install.packages("rpart") else library(rpart)
-  if(!require(rpart.plot)) install.packages("rpart.plot") else library(rpart.plot)
-  if(!require(randomForest)) install.packages("randomForest") else library(randomForest)
+  #require(ggpubr)
+  #if(!require(rbcb)) install.packages("rbcb") else library(rbcb)
+  #if(!require(qqplotr)) install.packages("qqplotr") else library(qqplotr)
+  #if(!require(car)) install.packages("car") else library(car)
+  #if(!require(pROC)) install.packages("pROC") else library(pROC)
+  #if(!require(mlogit)) install.packages("mlogit") else library(mlogit)
+  #if(!require(readr)) install.packages("readr") else library(readr)
+  #if(!require(rpart)) install.packages("rpart") else library(rpart)
+  #if(!require(rpart.plot)) install.packages("rpart.plot") else library(rpart.plot)
+  #if(!require(randomForest)) install.packages("randomForest") else library(randomForest)
   if(!require(lpSolve)) install.packages("lpSolve") else library (lpSolve)
   
-  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
-  
-  
-  ### Leitura de dados
+  ### ### ### ### ### ### ### ### ###  1. LEITURA  E EXPLORAÇÃO DE DADOS ### ### ### ### ### ### ### ### ### 
   
   ### MacOS
   dados =  read_excel("~/Library/CloudStorage/OneDrive-Pessoal/Documentos/7. Especialização/3. TCC/3. Códigos/tcc/BaseCompilada_TS14_2022.xlsx", 
@@ -84,7 +76,6 @@
   
   # View(dados)  
 
-  
   ### Estatísticas - resumo
   summary(dados)
   
@@ -92,40 +83,33 @@
   dados$IdAgente = as.character(dados$IdAgente)
   
   ### dataset com variáveis do modelo
-  
   db = with(dados,dplyr::select(dados, Concessionaria, Tipo,
                         Ano, PMSO, rede.menor.230,
                         rede.maior.230,MVA,Mvar,
                         modulos.sub.menor230,modulos.sub.maior230,
                         modulos.manobra.menor230,modulos.manobra.maior230))
-  
-  View(db)
-  ### VERIFICA VARIÁVEIS COM MAIOR R² PARA RENOMEAR VARIÁVEIS
-  ### Pré análise
-  # rm(list="modelo_mass")
+  #View(db)
  
-  
+  ### Pré análise
+
   modelo_mass = masslm(db[,4:12], "PMSO")
   modelo_mass =  as.data.frame(modelo_mass)
   modelo_mass = modelo_mass[order(modelo_mass$R.squared,decreasing = TRUE),]
   print(modelo_mass)
   
-
-  ### Variáveis do modelo ### ### ### ### ### ### ### ### ### ### ### ### ###
-  ### Ordenadas de acordo com a ordem crescem de pré-análise do R²        ###
-  ###                                                                     ###
-  # X1: Extensão de rede superior que 230 kV                              ###
-  # X2: Módulos de manobra com tensão igual ou superior a 230 kV          ###
-  # X3: Equipamentos de subestação com tensão superior a 230 kV           ###
-  # x4: Potência aparente total, em MVA, de equipamentos de subestação    ###
-  # X5: Potência reativa total, em Mvar, de equipamentos de subestação    ###
-  # X6: Equipamentos de subestação com tensão inferior a 230 kV           ###
-  # X7: Módulos de manobra com tensão inferior a 230 kV                   ###
-  # X8: Extensão de rede menor que 230 kV                                 ###
-  # Y : PMSO (variável resposta)                                          ###
-  #                                                                       ###
-  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
-
+  ### Variáveis do modelo 
+  ### Ordenadas de acordo com a ordem crescem de pré-análise do R²        
+                                                                  
+  ### X1: Extensão de rede superior que 230 kV                          
+  ### X2: Módulos de manobra com tensão igual ou superior a 230 kV          
+  ### X3: Equipamentos de subestação com tensão superior a 230 kV           
+  ### x4: Potência aparente total, em MVA, de equipamentos de subestação    
+  ### X5: Potência reativa total, em Mvar, de equipamentos de subestação    
+  ### X6: Equipamentos de subestação com tensão inferior a 230 kV           
+  ### X7: Módulos de manobra com tensão inferior a 230 kV                   
+  ### X8: Extensão de rede menor que 230 kV                                 
+  ### Y : PMSO (variável resposta)                                          
+  
   ### Modificacao dos nomes das variaveis
   
   colnames(db)[colnames(db) == modelo_mass$IV[1]] = "X1"
@@ -159,13 +143,13 @@
   dbcor = with(db,dplyr::select(db, PMSO,X1,X2,X3,X4,X5,X6,X7,X8))
     
   matCor <- cor(dbcor, method="spearman")
-  corrplot(matCor, type="upper",
+    corrplot(matCor, type="upper",
              order="AOE", diag=FALSE, addgrid.col=NA,
              outline=TRUE)
   
   ### Boxplots
   with(db,
-  boxplot(PMSO ~ Ano,
+       boxplot(PMSO ~ Ano,
           main="PMSO anual", 
           col="dark blue", 
           xlab="Ano",
@@ -188,9 +172,7 @@
                ylab="PMSO")
   )
   
-  ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
-  
-  ### Linear Regressions
+  ### ### ### ### ### ### ### ### ###  2. INICIALIZAÇÃO PARA MODELO ### ### ### ### ### ### ### ### ###
   
   ### Analisando o R2 de cada variavel separadamente
   exploreR::masslm(dbcor,"PMSO")
@@ -209,23 +191,16 @@
   shapiro.test(residuals(modelo))
   cat('Evidencias de que os residuos nao sao normalmente distribuidos')
   
-  
-  
-  ### Implementação lp -> minimização de betas
+  ### ### ### ### ### ### ### ### ###  2. IMPLEMENTAÇÃO DE MODELO LINEAR ### ### ### ### ### ### ### ### ###
   
   ### Modelo: 
-  ###
   ### min sum(j in n) 0.5*e1_j + 0.5e2_j
-  ### 
   ### subject to: 
-  ### 
   ### (e1_j - e2_j) + (alpha1 - alpha2)  +
   ### beta_1*x1_j + beta_2*x_2_j + 
   ### beta_3*x_3_j + beta_4*x_4_j + 
   ### beta_5*x_5_j + beta_6*x_6_j +
   ### beta_7*x_7_j + beta_8*x_8_j  = y_j 
-  ###      
-  ### 
   ### beta_i >= 0
   
   ### Implementação orientações Prof. Marcelo Azevedo Costa (11/11/2022)
@@ -237,7 +212,6 @@
   N = nrow(db)
   tau = 0.5
   
-
   ### Vetor com parametros
   v = c(db$X1,db$X2,db$X3,db$X4,db$X5,db$X6,db$X7,db$X8)
   
@@ -260,20 +234,18 @@
   
   
   for(k in 1:8){
-    
+
     ### cada valor de k representa uma variavel onde o beta sera regredida
-    
-    ### Inicializacao
-    
+  
     f.con = NULL
     f.obj = NULL
     f.con = NULL
     f.dir = NULL
     y = db$PMSO
-
+      
     ### (tau*e1,tau*e2,alfa1,alfa2,xx  )
     f.obj = c(rep(tau,N), rep(1-tau,N),0,0,0)
-    
+      
     ### Constraints || inicialização
     for(cont in 1:nrow(db)){
       e1 = rep(0, nrow(db)) # Inicializacao do vetor de erro (positivo)
@@ -286,40 +258,40 @@
       ### f.aux -> atribuição dos coeficientes de xi
       f.aux <- c(e1, e2, +1, -1,m1[cont,k])
       f.con <- rbind(f.con, f.aux)
-      } 
+  } 
       
     # View(f.con)
     f.dir = rep("=", N)
     f.rhs = y
-      
+        
     ### Gera a solucao
     saida   = lpSolve::lp ("min", f.obj, f.con, f.dir, f.rhs)
     solucao = saida$solution
-      
+        
     ### Para algumas componentes: erro e intercepto existem as
     ### 'partes' positivas e negativas. Entao, o valor final eh a
     ### diferenca entre essas partes.
-      
+        
     erros_var[,k] = solucao[1:N] - solucao[(N+1):(2*N)]
     maux[1,k] = solucao[(2*N)+1] - solucao[(2*N)+2]
     maux[2,k] = solucao[(2*N)+3]
-      
+        
     contador = contador+1
     } 
     
 
-    dados_regressoes = as.data.frame(maux)
-    colnames(dados_regressoes)[1] = "X1"
-    colnames(dados_regressoes)[2] = "X2"
-    colnames(dados_regressoes)[3] = "X3"
-    colnames(dados_regressoes)[4] = "X4"
-    colnames(dados_regressoes)[5] = "X5"
-    colnames(dados_regressoes)[6] = "X6"
-    colnames(dados_regressoes)[7] = "X7"
-    colnames(dados_regressoes)[8] = "X8"
-    rownames(dados_regressoes)[1] = "alpha"
-    rownames(dados_regressoes)[2] = "beta"
-    View(dados_regressoes)
+  dados_regressoes = as.data.frame(maux)
+  colnames(dados_regressoes)[1] = "X1"
+  colnames(dados_regressoes)[2] = "X2"
+  colnames(dados_regressoes)[3] = "X3"
+  colnames(dados_regressoes)[4] = "X4"
+  colnames(dados_regressoes)[5] = "X5"
+  colnames(dados_regressoes)[6] = "X6"
+  colnames(dados_regressoes)[7] = "X7"
+  colnames(dados_regressoes)[8] = "X8"
+  rownames(dados_regressoes)[1] = "alpha"
+  rownames(dados_regressoes)[2] = "beta"
+ # View(dados_regressoes)
     
   ###  GRAFICOS COM OS AJUSTES PARA TAU = 0.5
 
@@ -348,74 +320,164 @@
     plot(PMSO ~ X8, data=db, pch=19, col="blue");title(main = "PMSO x X8")
     abline(a=dados_regressoes[1,8], b=dados_regressoes[2,], lwd=1, lty = 2, col="red")
     
+    
+    
+    
+  ###  MODELO COM TODAS AS VARIAVEIS 
+  x1 = db$X1;x2 = db$X2;x3 = db$X3; x4 = db$X4;
+  x5 = db$X5;x6 = db$X6;x7 = db$X7;x8 = db$X8
   
-  ### ### ### ### ### ### MODELO COM TODAS AS VARIAVEIS ### ### ### ### ### 
-  
+  f.obj_t = c(rep(tau,N), rep(1-tau,N),0,0,0,0,0,0,0,0,0,0)
+  f.con_t = NULL
     
-    ### Todas as variaveis sao inputadas no modelo
-    ### 
-    
-     x1 = db$X1;x2 = db$X2;x3 = db$X3; x4 = db$X4;
-     x5 = db$X5;x6 = db$X6;x7 = db$X7;x8 = db$X8
-    
-    f.obj_t = c(rep(tau,N), rep(1-tau,N),0,0,0,0,0,0,0,0,0,0)
-    f.con_t = NULL
-    
-    ### Constraints || inicialização
-    for(cont in 1:nrow(db)){
-      e1 = rep(0, nrow(db)) # Inicializacao do vetor de erro (positivo)
-      e2 = rep(0, nrow(db)) # Inicializacao do vetor de erro (negativo)
-      e1[cont] = +1
-      e2[cont] = -1
-      f.aux <- c(e1, e2, +1, -1,x1[cont],x2[cont],x3[cont],x4[cont],x5[cont],x6[cont],x7[cont],x8[cont])
-      f.con_t <- rbind(f.con_t, f.aux)
+  ### Constraints || inicialização
+  for(cont in 1:nrow(db)){
+    e1 = rep(0, nrow(db)) # Inicializacao do vetor de erro (positivo)
+    e2 = rep(0, nrow(db)) # Inicializacao do vetor de erro (negativo)
+    e1[cont] = +1
+    e2[cont] = -1
+    f.aux <- c(e1, e2, +1, -1,x1[cont],x2[cont],x3[cont],x4[cont],x5[cont],x6[cont],x7[cont],x8[cont])
+    f.con_t <- rbind(f.con_t, f.aux)
     } 
     
-    # View(f.con)
-    f.dir_t = rep("=", N)
-    f.rhs_t = y
+  # View(f.con)
+  f.dir_t = rep("=", N)
+  f.rhs_t = y
     
-    ### Gera a solucao
-    saida_t   = lpSolve::lp ("min", f.obj_t, f.con_t, f.dir_t, f.rhs_t)
-    solucao_t = saida_t$solution
+  ### Gera a solucao
+  saida_t   = lpSolve::lp ("min", f.obj_t, f.con_t, f.dir_t, f.rhs_t)
+  solucao_t = saida_t$solution
     
-    ### Erros, alpha e beta
+  ### Erros, alpha e beta
     
-    erros = solucao_t[1:N] - solucao_t[(N+1):(2*N)]
-    alpha = solucao_t[(2*N)+1] - solucao_t[(2*N)+2]
+  erros = solucao_t[1:N] - solucao_t[(N+1):(2*N)]
+  alpha = solucao_t[(2*N)+1] - solucao_t[(2*N)+2]
     
-    ### vetor para receber os valores dos betas
+  ### vetor para receber os valores dos betas
+  betas = NULL
+  for(i in 1:8){
+    betas[i] = solucao_t[(2*N)+(i+2)]
+  }
+    
+  resultado = c(alpha,betas)
+  resultado = as.data.frame(resultado)
+  rownames(resultado)[1] = "alpha"
+  rownames(resultado)[2] = "beta1"
+  rownames(resultado)[3] = "beta2"
+  rownames(resultado)[4] = "beta3"
+  rownames(resultado)[5] = "beta4"
+  rownames(resultado)[6] = "beta5"
+  rownames(resultado)[7] = "beta6"
+  rownames(resultado)[8] = "beta7"
+  rownames(resultado)[9] = "beta8"
+  
+  ### ### ### ### ### ### ### ### ###  3. ESTIMAÇÃO DO PMSO E ANÁLISE DO R²  ### ### ### ### ### ### ### ### ###
+
+  ### Validação -  remover uma empresa completamente da base)
+  ### loop para retirar a empresa e estimar seu PMSO
+  ### Ajustar o modelo e estimar o custo operacional da empresa que foi removida
+  ### Calcular R2 preditivo
+  ### Realziar validacão cruzada
+  ### Calcular R2 -> usar logaritmo do PMSO
+  
+  ### Loop para calcular todas as empresas:
+  ### 1. Criar um vetor contendo o nome de cada empresa presente na base
+  ### 2. Pegar o tamanho do vetor
+  ### 3. Função que cria um subconjunto da base dedos excluindo a empresa selecionada
+
+  #db1 = filter(db,Concessionaria!= conc[1])
+  #db2 = filter(db,Concessionaria == conc[1])
+  #db_calc = NULL
+  
+  rm(list = x1,x2,x3,x4,x5,x6,x7,x8,
+     y_tr,t,TABULAR,obj,conc,db_tr,db_v,e1,e2,fcon,i,L,lambda,
+     N_tr,nconc,x1,faux,fdir,frhs,conc,alpha,betas,solution,errors,outputs,mt,param,j,l)
+  rm()
+  
+  conc = db$Concessionaria
+  conc = conc[!duplicated(conc)]
+  nconc = length(conc)
+  
+  L = 0
+  TABULAR = NULL
+  #i=1
+  for (i in 1:nconc){
+    x1 = NULL;x2 = NULL;x3 = NULL; x4 = NULL;x5 = NULL;x6 = NULL;x7 = NULL; x8 = NULL
+    db_tr = NULL
+    db_v = NULL
+    mt = NULL
+    N_tr = NULL
+    j = NULL
+    
+    db_tr = filter(db,Concessionaria!= conc[i])
+    db_v = filter(db,Concessionaria == conc[i])
+    
+    # preparação para modelo linear
+    y_tr = db_tr$PMSO # y da minimização dos erros
+    lambda = 0.5 #parametro paras os erros
+    N_tr = nrow(db_tr)
+    
+    x1 = db_tr$X1;x2 = db_tr$X2;x3 = db_tr$X3; x4 = db_tr$X4;
+    x5 = db_tr$X5;x6 = db_tr$X6;x7 = db_tr$X7;x8 = db_tr$X8
+    
+    ### Linear program
+    
+    obj = c(rep(lambda,N_tr), rep(1-lambda,N_tr),0,0,0,0,0,0,0,0,0,0)
+    fcon = NULL
+    
+      for(t in 1:nrow(db_tr)){
+        e1 = rep(0, nrow(db_tr)) # Inicializacao do vetor de erro (positivo)
+        e2 = rep(0, nrow(db_tr)) # Inicializacao do vetor de erro (negativo)
+        e1[t] = +1
+        e2[t] = -1
+        faux <- c(e1, e2, +1, -1,x1[t],x2[t],x3[t],x4[t],x5[t],x6[t],x7[t],x8[t])
+        fcon <- rbind(fcon, faux)
+      }
+    
+    fdir = rep("=", N_tr)
+    frhs = y_tr
+    outputs   = lpSolve::lp ("min", obj, fcon, fdir, frhs)
+    solution = outputs$solution
+    errors = solution[1:N_tr ] - solution[(N_tr+1):(2*N_tr )]
+    alpha = solution[(2*N_tr )+1] - solution[(2*N_tr)+2]
+    
     betas = NULL
-    for(i in 1:8){
-      betas[i] = solucao_t[(2*N)+(i+2)]
+    for(l in 1:8){
+      betas[l] = solution[(2*N_tr)+(l+2)]
     }
     
-    resultado = c(alpha,betas)
-    resultado = as.data.frame(resultado)
-    rownames(resultado)[1] = "alpha"
-    rownames(resultado)[2] = "beta1"
-    rownames(resultado)[3] = "beta2"
-    rownames(resultado)[4] = "beta3"
-    rownames(resultado)[5] = "beta4"
-    rownames(resultado)[6] = "beta5"
-    rownames(resultado)[7] = "beta6"
-    rownames(resultado)[8] = "beta7"
-    rownames(resultado)[9] = "beta8"
-    View(resultado)
-    
-    
-  ### ANÁLISE DO R² PREDITO ###
+    resultado = as.matrix(c(alpha,betas))
+    param = as.vector(resultado[-1,])
+    mt = with(db_v,data.frame(X1,X2,X3,X4,X5,X6,X7,X8))
+    mt  = as.matrix(mt)
   
+  
+    for(j in 1:nrow(mt)){
+      db_v$pmso_val[j] = (mt[j,] %*% param) + alpha
+    }
+    
+    if(L ==0){
+      TABULAR = db_v
+      L = L+1 
+      }else{
+        TABULAR = rbind(TABULAR,db_v)
+      }
+  }
+  
+View(TABULAR)
+TABULAR$diferenca = TABULAR$pmso_val - TABULAR$PMSO
+TABULAR$dif_per = round(abs((TABULAR$pmso_val/TABULAR$PMSO))-1,2)
+View(db)
+    
+    
   ### R-squared
   ### Soma dos quadrados da regressao
   ### Soma dos quadrados totais
   
   ### Calculo da media de PMSO para os calculcos do R squared
   
-    y_ = mean(db$PMSO)
+  y_ = mean(db$PMSO)
   
-    
-    View(db)
   ### Calculo dos residuos
   
   ### Preparacao de matriz para prever com o ajuste do modelo de programacao linear
@@ -433,32 +495,13 @@
     cat(fi[i])
     cat("\n")
   }
-  
-  ### Validação -  remover uma empresa completamente da base)
-  ### loop para retirar a empresa e estimar seu PMSO
-  ### Ajustar o modelo e estimar o custo operacional da empresa que foi removida
-  ### Calcular R2 preditivo
-  ### Realziar validacão cruzada
-  ### Calcular R2 -> usar logaritmo do PMSO
-  
-  ### Loop para calcular todas as empresas:
-  ### 1. Criar um vetor contendo o nome de cada empresa presente na base
-  ### 2. Pegar o tamanho do vetor
-  ### 3. Função que cria um subconjunto da base dedos excluindo a empresa selecionada
-  conc = db$Concessionaria
-  conc = concessionarias[!duplicated(concessionarias)]
-  nconc = length(concessionarias)
 
-  filter(db,Concessionaria!= conc[1])
-  
-  
-  for (i in 1:nconc){
-    
-    
-  }
+  fi
+
   
   
   
+  ### ### ### ### ### ### ### ### ###  4. MODELO GAMA ### ### ### ### ### ### ### ### ###
   
   ### Modelo linear generalizado - Distribuicao Gama - Familia Exponencial  
   ### Variancia = µˆ2 
