@@ -389,10 +389,10 @@
   #db2 = filter(db,Concessionaria == conc[1])
   #db_calc = NULL
   
-  rm(list = x1,x2,x3,x4,x5,x6,x7,x8,
-     y_tr,t,TABULAR,obj,conc,db_tr,db_v,e1,e2,fcon,i,L,lambda,
-     N_tr,nconc,x1,faux,fdir,frhs,conc,alpha,betas,solution,errors,outputs,mt,param,j,l)
-  rm()
+  # rm(list = x1,x2,x3,x4,x5,x6,x7,x8,
+  #    y_tr,t,TABULAR,obj,conc,db_tr,db_v,e1,e2,fcon,i,L,lambda,
+  #    N_tr,nconc,x1,faux,fdir,frhs,conc,alpha,betas,solution,errors,outputs,mt,param,j,l)
+
   
   conc = db$Concessionaria
   conc = conc[!duplicated(conc)]
@@ -464,10 +464,12 @@
       }
   }
   
-View(TABULAR)
-TABULAR$diferenca = TABULAR$pmso_val - TABULAR$PMSO
-TABULAR$dif_per = round(abs((TABULAR$pmso_val/TABULAR$PMSO))-1,2)
-View(db)
+
+  TABULAR$diferenca = TABULAR$pmso_val - TABULAR$PMSO
+  TABULAR$dif_per = round(abs((TABULAR$pmso_val/TABULAR$PMSO))-1,2)
+  
+  View(TABULAR)
+  View(db)
     
     
   ### R-squared
@@ -476,27 +478,27 @@ View(db)
   
   ### Calculo da media de PMSO para os calculcos do R squared
   
-  y_ = mean(db$PMSO)
-  
-  ### Calculo dos residuos
-  
-  ### Preparacao de matriz para prever com o ajuste do modelo de programacao linear
-  mt = with(db,data.frame(X1,X2,X3,X4,X5,X6,X7,X8))
-  mt  = as.matrix(mt)
-  
-  ### Preparacao do vetor para a multiplicaca
-  param = as.vector(resultado[-1,])
- 
-  
-  fi = NULL
-
-  for(i in 1:nrow(mt)){
-    fi[i] = (mt[i,] %*% param) + alpha
-    cat(fi[i])
-    cat("\n")
-  }
-
-  fi
+  # y_ = mean(db$PMSO)
+  # 
+  # ### Calculo dos residuos
+  # 
+  # ### Preparacao de matriz para prever com o ajuste do modelo de programacao linear
+  # mt = with(db,data.frame(X1,X2,X3,X4,X5,X6,X7,X8))
+  # mt  = as.matrix(mt)
+  # 
+  # ### Preparacao do vetor para a multiplicaca
+  # ### param = as.vector(resultado[-1,])
+  # 
+  # 
+  # fi = NULL
+  # 
+  # for(i in 1:nrow(mt)){
+  #   fi[i] = (mt[i,] %*% param) + alpha
+  #   cat(fi[i])
+  #   cat("\n")
+  # }
+  # 
+  # fi
 
   
   
@@ -506,19 +508,19 @@ View(db)
   ### Modelo linear generalizado - Distribuicao Gama - Familia Exponencial  
   ### Variancia = µˆ2 
   ### Função de ligação -> linear
-  ### Motivação: superdispersão
   ### compare.fits | model.comparison | flex.plot
   
   ### Implementação do modelo
+  ### 
   modelo_gama = glm(PMSO ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 +X8, 
                     family = Gamma,
                     data = db)
-summary(modelo_gama)  
+  summary(modelo_gama)  
   
-pgama = 1-pchisq(modelo_gama$deviance,modelo_gama$df.residual)
-pgama  
+  pgama = 1-pchisq(modelo_gama$deviance,modelo_gama$df.residual)
+  pgama  
 
-plot(modelo_gama)    
+  plot(modelo_gama)    
 
     
 
