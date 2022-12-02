@@ -66,8 +66,8 @@
   ### ### ### ### ### ### ### ### ###  1. LEITURA  E EXPLORAÇÃO DE DADOS ### ### ### ### ### ### ### ### ### 
   
   ### MacOS
-  dados =  read_excel("~/Library/CloudStorage/OneDrive-Pessoal/Documentos/7. Especialização/3. TCC/3. Códigos/tcc/BaseCompilada_TS14_2022.xlsx", 
-                   sheet = "DadosEscores")
+  #dados =  read_excel("~/Library/CloudStorage/OneDrive-Pessoal/Documentos/7. Especialização/3. TCC/3. Códigos/tcc/BaseCompilada_TS14_2022.xlsx", 
+  #                 sheet = "DadosEscores")
   
   ###  Windows
   library(readxl)
@@ -76,13 +76,13 @@
   
   # View(dados)  
 
-  ### Estatísticas - resumo
+  ### Estatisticas - resumo
   summary(dados)
   
-  ### Transformação do IdAgente as char
+  ### Transformacao do IdAgente as char
   dados$IdAgente = as.character(dados$IdAgente)
   
-  ### dataset com variáveis do modelo
+  ### dataset com variaveis do modelo
   db = with(dados,dplyr::select(dados, Concessionaria, Tipo,
                         Ano, PMSO, rede.menor.230,
                         rede.maior.230,MVA,Mvar,
@@ -90,26 +90,26 @@
                         modulos.manobra.menor230,modulos.manobra.maior230))
   #View(db)
  
-  ### Pré análise
-  
+  ### Pre analise
+  require(exploreR)
 
   modelo_mass = masslm(db[,4:12], "PMSO")
   modelo_mass =  as.data.frame(modelo_mass)
   modelo_mass = modelo_mass[order(modelo_mass$R.squared,decreasing = TRUE),]
   print(modelo_mass)
   
-  ### Variáveis do modelo 
-  ### Ordenadas de acordo com a ordem crescem de pré-análise do R²        
+  ### Variaveis do modelo 
+  ### Ordenadas de acordo com a ordem crescem de pre-analise do R²        
                                                                   
-  ### X1: Extensão de rede superior que 230 kV                          
-  ### X2: Módulos de manobra com tensão igual ou superior a 230 kV          
-  ### X3: Equipamentos de subestação com tensão superior a 230 kV           
-  ### x4: Potência aparente total, em MVA, de equipamentos de subestação    
-  ### X5: Potência reativa total, em Mvar, de equipamentos de subestação    
-  ### X6: Equipamentos de subestação com tensão inferior a 230 kV           
-  ### X7: Módulos de manobra com tensão inferior a 230 kV                   
-  ### X8: Extensão de rede menor que 230 kV                                 
-  ### Y : PMSO (variável resposta)                                          
+  ### X1: Extensao de rede superior que 230 kV                          
+  ### X2: Modulos de manobra com tensao igual ou superior a 230 kV          
+  ### X3: Equipamentos de subestacao com tensao superior a 230 kV           
+  ### x4: Potencia aparente total, em MVA, de equipamentos de subestacao    
+  ### X5: Potencia reativa total, em Mvar, de equipamentos de subestacao    
+  ### X6: Equipamentos de subestacao com tensao inferior a 230 kV           
+  ### X7: Modulos de manobra com tensão inferior a 230 kV                   
+  ### X8: Extensao de rede menor que 230 kV                                 
+  ### Y : PMSO (variavel resposta)                                          
   
   ### Modificacao dos nomes das variaveis
   
@@ -191,6 +191,57 @@
   
   shapiro.test(residuals(modelo))
   cat('Evidencias de que os residuos nao sao normalmente distribuidos')
+
+    
+  ## - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  ## Implementacao Marcelo (02/12/2022) - Modelo Gama
+  modelo <- glm(PMSO ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8, 
+                data=db, family=Gamma(link='identity'))
+  modelo <- stepAIC(modelo)
+  summary(modelo)
+  
+  # Validacao cruzada por empresa
+  yfit <- rep(NA,nrow(db))
+  for(emp in unique(db$Concessionaria)){
+    pos   <- which(db$Concessionaria == emp)
+    train <- db[-pos,]
+    test  <- db[pos,]
+    
+    modelo <- glm(PMSO ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8, 
+                  data=train, family=Gamma(link='identity'))
+    modelo <- stepAIC(modelo, trace=FALSE)
+    
+    yfit[pos] <- predict(modelo, newdata=test, type="response")
+  }
+  
+  # Compara o estimado e o real
+    plot(yfit ~ db$PMSO, pch=19, col="blue", ylab="estimated PMSO", 
+         xlab="observed PMSO")
+    abline(a=0, b=1, col="red", pch=19)
+  
+    # Escala log
+    plot(yfit ~ db$PMSO, pch=19, col="blue", log="xy", 
+         ylab="estimated PMSO", 
+         xlab="observed PMSO")
+    abline(a=0, b=1, col="red", pch=19)
+    
+  # R2 preditivo na escala original e na escala logaritmica
+    y     <- db$PMSO
+    SQT   <- sum( (y - mean(y))^2 )
+    SQres <- sum( (y - yfit)^2 )
+    (1 - SQres/SQT)
+    
+    # Escala log
+    y     <- log(db$PMSO)
+    SQT   <- sum( (y - mean(y))^2 )
+    SQres <- sum( (y - log(yfit))^2 )
+    (1 - SQres/SQT)
+  ## - - - - - - - - - - - - - - - - - - - - - - - - - -     
+  
+  
+  
+  
+  
   
   ### ### ### ### ### ### ### ### ###  2. IMPLEMENTAÇÃO DE MODELO LINEAR ### ### ### ### ### ### ### ### ###
   
@@ -374,7 +425,7 @@
   
   ### ### ### ### ### ### ### ### ###  3. ESTIMAÇÃO DO PMSO E ANÁLISE DO R²  ### ### ### ### ### ### ### ### ###
 
-  ### Validação -  remover uma empresa completamente da base)
+  ### Validacao -  remover uma empresa completamente da base)
   ### loop para retirar a empresa e estimar seu PMSO
   ### Ajustar o modelo e estimar o custo operacional da empresa que foi removida
   ### Calcular R2 preditivo
@@ -471,6 +522,44 @@
   
   View(TABULAR)
   View(db)
+  
+  
+  
+  ## - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  ## Implementacao Marcelo (02/12/2022) - Regressao lpSolve
+  # Compara o estimado e o real
+  plot(pmso_val ~ PMSO, pch=19, col="blue", ylab="estimated PMSO", 
+       xlab="observed PMSO", data = TABULAR)
+  abline(a=0, b=1, col="red", pch=19)
+  
+  # Escala log
+  plot(pmso_val ~ PMSO, pch=19, col="blue", log="xy", 
+       ylab="estimated PMSO", 
+       xlab="observed PMSO", data = TABULAR)
+  abline(a=0, b=1, col="red", pch=19)
+  
+  # R2 preditivo na escala original e na escala logaritmica
+  y     <- TABULAR$PMSO
+  yfit  <- TABULAR$pmso_val
+  SQT   <- sum( (y - mean(y))^2 )
+  SQres <- sum( (y - yfit)^2 )
+  (1 - SQres/SQT)
+  
+  # Escala log
+  pos   <- yfit > 0 
+  y     <- log(TABULAR$PMSO[pos])
+  yfit  <- TABULAR$pmso_val[pos]
+  SQT   <- sum( (y - mean(y))^2 )
+  SQres <- sum( (y - log(yfit))^2 )
+  (1 - SQres/SQT)  
+  
+  
+  dt01 <- subset(TABULAR, PMSO >= 359798.5)
+  dt02 <- subset(TABULAR, PMSO < 359798.5)
+  
+  # Proximos passos: Modelo lpSolve para cada subgrupo
+  # e FIM (em 02/12/2022)
+
     
     
   ### R-squared
