@@ -557,8 +557,6 @@
   dt01 <- subset(TABULAR, PMSO >= 359798.5)
   dt02 <- subset(TABULAR, PMSO < 359798.5)
   
-  View(dt01)
-  
   # Proximos passos: Modelo lpSolve para cada subgrupo
   # e FIM (em 02/12/2022)
 

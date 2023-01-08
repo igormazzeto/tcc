@@ -88,7 +88,7 @@
                         rede.maior.230,MVA,Mvar,
                         modulos.sub.menor230,modulos.sub.maior230,
                         modulos.manobra.menor230,modulos.manobra.maior230))
-  #View(db)
+  View(db)
  
   ### Pré análise
   
@@ -192,7 +192,61 @@
   shapiro.test(residuals(modelo))
   cat('Evidencias de que os residuos nao sao normalmente distribuidos')
   
-  ### ### ### ### ### ### ### ### ###  2. IMPLEMENTAÇÃO DE MODELO LINEAR ### ### ### ### ### ### ### ### ###
+  
+  ### Implementacao Prof. Marcelo (02/12/2022) - Modelo Gama
+  
+  modelo_gm <- glm(PMSO ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8,
+                    data=db, family=Gamma(link='identity'))
+  modelo_gm <- MASS::stepAIC(modelo_gm)
+  summary(modelo_gm)
+  
+
+  ### Validacao cruzada por empresa
+  #   Retira uma empresa para rodar o modelo com a base de treinamento
+  #   Realiza a previsao com a base de teste
+  #   Armazena os resultados no vetor yfit
+  
+  yfit <- rep(NA,nrow(db))
+  for(emp in unique(db$Concessionaria)){
+    pos   <- which(db$Concessionaria == emp)
+    train <- db[-pos,]
+    test  <- db[pos,]
+    
+    modelo_gm2 <- glm(PMSO ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8, 
+                  data=train, family=Gamma(link='identity'))
+    modelo_gm2 <- stepAIC(modelo_gm2, trace=FALSE)
+    
+    yfit[pos] <- predict(modelo_gm2, newdata=test, type="response")
+  }
+  yfit
+  
+  ### Compara o estimado e o real
+  plot(yfit ~ db$PMSO, pch=19, col="blue", ylab="estimated PMSO", 
+       xlab="observed PMSO"); title(main = "Estimated PMSO x Observed PMSO")
+  abline(a=0, b=1, col="red", pch=19)
+  
+  ### Escala log
+  plot(yfit ~ db$PMSO, pch=19, col="blue", log="xy", 
+       ylab="estimated PMSO", 
+       xlab="observed PMSO");title(main = "Estimated PMSO x Observed PMSO - Log")
+  abline(a=0, b=1, col="red", pch=19)
+  
+  ### R2 preditivo na escala original e na escala logaritmica
+  y_r2     <- db$PMSO
+  SQT   <- sum( (y_r2 - mean(y_r2))^2 )
+  SQres <- sum( (y_r2 - yfit)^2 )
+  R2 = (1 - SQres/SQT)
+  R2
+  
+  ### Escala log
+  y_log     <- log(db$PMSO)
+  SQT_log   <- sum( (y_log - mean(y_log))^2 )
+  SQres_log <- sum( (y_log - log(yfit))^2 )
+  R2_log = (1 - SQres_log/SQT_log)
+  R2_log
+  
+  
+  ### ### ### ### ### ### ### ### ###  3. IMPLEMENTAÇÃO DE MODELO LINEAR ### ### ### ### ### ### ### ### ###
   
   ### Modelo: 
   ### min sum(j in n) 0.5*e1_j + 0.5e2_j
@@ -292,7 +346,7 @@
   colnames(dados_regressoes)[8] = "X8"
   rownames(dados_regressoes)[1] = "alpha"
   rownames(dados_regressoes)[2] = "beta"
- # View(dados_regressoes)
+  # View(dados_regressoes)
     
   ###  GRAFICOS COM OS AJUSTES PARA TAU = 0.5
 
@@ -372,7 +426,7 @@
   rownames(resultado)[8] = "beta7"
   rownames(resultado)[9] = "beta8"
   
-  ### ### ### ### ### ### ### ### ###  3. ESTIMAÇÃO DO PMSO E ANÁLISE DO R²  ### ### ### ### ### ### ### ### ###
+  ### ### ### ### ### ### ### ### ###  4. ESTIMAÇÃO DO PMSO E ANÁLISE DO R²  ### ### ### ### ### ### ### ### ###
 
   ### Validação -  remover uma empresa completamente da base)
   ### loop para retirar a empresa e estimar seu PMSO
@@ -470,58 +524,50 @@
   TABULAR$dif_per = round(abs((TABULAR$pmso_val/TABULAR$PMSO))-1,2)
   
   View(TABULAR)
-  View(db)
-    
+  #View(db)
     
   ### R-squared
   ### Soma dos quadrados da regressao
   ### Soma dos quadrados totais
   
-  ### Calculo da media de PMSO para os calculcos do R squared
   
-  # y_ = mean(db$PMSO)
-  # 
-  # ### Calculo dos residuos
-  # 
-  # ### Preparacao de matriz para prever com o ajuste do modelo de programacao linear
-  # mt = with(db,data.frame(X1,X2,X3,X4,X5,X6,X7,X8))
-  # mt  = as.matrix(mt)
-  # 
-  # ### Preparacao do vetor para a multiplicaca
-  # ### param = as.vector(resultado[-1,])
-  # 
-  # 
-  # fi = NULL
-  # 
-  # for(i in 1:nrow(mt)){
-  #   fi[i] = (mt[i,] %*% param) + alpha
-  #   cat(fi[i])
-  #   cat("\n")
-  # }
-  # 
-  # fi
+  ### Implementacao Prof.Marcelo (02/12/2022) - Regressao lpSolve
+  # Compara o estimado e o real
+  
+  plot(pmso_val ~ PMSO, pch=19, col="blue", ylab="estimated PMSO", 
+       xlab="observed PMSO", data = TABULAR)
+  abline(a=0, b=1, col="red", pch=19)
+  
+  # Escala log
+  plot(pmso_val ~ PMSO, pch=19, col="blue", log="xy", 
+       ylab="estimated PMSO", 
+       xlab="observed PMSO", data = TABULAR)
+  abline(a=0, b=1, col="red", pch=19)
+  
+  # R2 preditivo na escala original e na escala logaritmica
+  y     <- TABULAR$PMSO
+  yfit  <- TABULAR$pmso_val
+  SQT   <- sum( (y - mean(y))^2 )
+  SQres <- sum( (y - yfit)^2 )
+  (1 - SQres/SQT)
+  
+  # Escala log
+  pos   <- yfit > 0 
+  y     <- log(TABULAR$PMSO[pos])
+  yfit  <- TABULAR$pmso_val[pos]
+  SQT   <- sum( (y - mean(y))^2 )
+  SQres <- sum( (y - log(yfit))^2 )
+  (1 - SQres/SQT)  
+  
+  
+  dt01 <- subset(TABULAR, PMSO >= 359798.5)
+  dt02 <- subset(TABULAR, PMSO < 359798.5)
+  
+  View(dt01)
 
   
   
   
-  ### ### ### ### ### ### ### ### ###  4. MODELO GAMA ### ### ### ### ### ### ### ### ###
-  
-  ### Modelo linear generalizado - Distribuicao Gama - Familia Exponencial  
-  ### Variancia = µˆ2 
-  ### Função de ligação -> linear
-  ### compare.fits | model.comparison | flex.plot
-  
-  ### Implementação do modelo
-  ### 
-  modelo_gama = glm(PMSO ~ X1 + X2 + X3 + X4 + X5 + X6 + X7 +X8, 
-                    family = Gamma,
-                    data = db)
-  summary(modelo_gama)  
-  
-  pgama = 1-pchisq(modelo_gama$deviance,modelo_gama$df.residual)
-  pgama  
-
-  plot(modelo_gama)    
 
     
 
